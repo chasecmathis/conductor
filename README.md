@@ -1,2 +1,2 @@
 # conductor
-A gesture controlled music player Androind application
+A gesture controlled music player Android application

@@ -26,54 +26,88 @@
             android:layout_below="@id/welcome_label"
             android:layout_marginTop="16dp"
             android:columnCount="2"
-            android:rowCount="3">
+            android:rowCount="1">
+
+            <LinearLayout
+                android:id="@+id/left_column"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="start">
 
             <Button
                 android:id="@+id/button_play"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:text="@string/play"/>
 
-            <Button
-                android:id="@+id/button_pause"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/pause"/>
 
             <Button
                 android:id="@+id/button_volume_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:text="@string/vol_up"/>
+
+                <Button
+                    android:id="@+id/button_skip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/skip"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/right_column"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="end">
+
+                <Button
+                    android:id="@+id/button_pause"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/pause"/>
 
             <Button
                 android:id="@+id/button_volume_down"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:text="@string/vol_down"/>
 
-            <Button
-                android:id="@+id/button_skip"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/skip"/>
 
             <Button
                 android:id="@+id/button_previous"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:text="@string/previous"/>
+            </LinearLayout>
+
         </GridLayout>
 
         <!-- Settings Button -->
+
+    <LinearLayout
+        android:id="@+id/options"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/control_grid"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center">
+
         <Button
             android:id="@+id/button_settings"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/settings"
-            android:layout_below="@id/control_grid"
-            android:layout_marginTop="16dp"
-            android:layout_alignParentStart="true"/>
+            android:layout_marginTop="16dp" />
 
         <!-- Tutorial Button -->
         <Button
@@ -81,7 +115,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/tutorial"
-            android:layout_below="@id/control_grid"
-            android:layout_marginTop="16dp"
-            android:layout_alignParentEnd="true"/>
+            android:layout_marginTop="16dp" />
+
+
+    </LinearLayout>
+
+
     </RelativeLayout>

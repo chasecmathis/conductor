@@ -40,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="@string/play"/>
+                android:text="@string/play" />
 
 
             <Button
@@ -48,7 +48,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="@string/vol_up"/>
+                android:text="@string/vol_up"
+                android:onClick="volumeUpClicked"/>
 
                 <Button
                     android:id="@+id/button_skip"
@@ -78,7 +79,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="@string/vol_down"/>
+                android:text="@string/vol_down"
+                android:onClick="volumeDownClicked"/>
 
 
             <Button

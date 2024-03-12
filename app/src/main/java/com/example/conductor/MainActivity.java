@@ -20,13 +20,14 @@ public class MainActivity extends AppCompatActivity {
         this.musicController = new MusicController(this.audioManager);
     }
 
-    public void playButtonClicked(View v) {
-
-        Toast.makeText(this, "Play button clicked", Toast.LENGTH_SHORT).show();
-    }
-
     public void volumeUpClicked(View v) {
         Toast.makeText(this, "Volume up button clicked", Toast.LENGTH_SHORT).show();
+        this.musicController.raiseVolume();
+    }
+
+    public void volumeDownClicked(View v) {
+        Toast.makeText(this, "Volume down button clicked", Toast.LENGTH_SHORT).show();
         this.musicController.lowerVolume();
+
     }
 }

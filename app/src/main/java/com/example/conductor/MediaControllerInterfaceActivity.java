@@ -2,29 +2,26 @@ package com.example.conductor;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.session.MediaController;
 import android.media.session.MediaSessionManager;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.v4.media.session.MediaSessionCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-public class MainActivity extends AppCompatActivity {
-
-    private MediaSessionCompat mediaSession;
-
+public class MediaControllerInterfaceActivity extends AppCompatActivity {
     MediaSessionManager mediaSessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        requestNotificationListenerPermission();
+        setContentView(R.layout.media_controller_interface);
 
         mediaSessionManager = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
 
@@ -69,10 +66,27 @@ public class MainActivity extends AppCompatActivity {
 
     private void requestNotificationListenerPermission() {
         if (!isNotificationListenerEnabled()) {
-            // Open settings to enable notification access
-            Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
-            startActivity(intent);
+
+            showAlertDialog();
+
         }
+    }
+
+    private void showAlertDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Must allow notification permissions for this app")
+                .setMessage("Please grant notification permissions within the settings app")
+                .setPositiveButton("Go to settings", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Handle the "OK" button click
+                        dialog.dismiss(); // Dismiss the dialog
+                        // Open settings to enable notification access
+                        Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
+                        startActivity(intent);
+                    }
+                })
+                .show();
     }
 
     private boolean isNotificationListenerEnabled() {
@@ -101,33 +115,36 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-//        // Unregister the receiver to avoid memory leaks
-//        if (mediaNotificationListener != null) {
-//            unbindService(mediaNotificationListener);
-//        }
-
         super.onDestroy();
     }
 
+    protected void onResume() {
+        super.onResume();
+        requestNotificationListenerPermission();
+    }
     // This method will be called when the button is clicked
     private void pauseButtonClick() {
-        for (MediaController controller : mediaSessionManager.getActiveSessions(new ComponentName(this, getClass()))) {
+        MediaController controller = mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).get(0);
+        if (controller != null) {
             controller.getTransportControls().pause();
         }
     }
 
     private void playButtonClick() {
-        for (MediaController controller : mediaSessionManager.getActiveSessions(new ComponentName(this, getClass()))) {
+        MediaController controller = mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).get(0);
+        if (controller != null) {
             controller.getTransportControls().play();
         }
     }
     private void skipButtonClick() {
-        for (MediaController controller : mediaSessionManager.getActiveSessions(new ComponentName(this, getClass()))) {
+        MediaController controller = mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).get(0);
+        if (controller != null) {
             controller.getTransportControls().skipToNext();
         }
     }
     private void previousButtonClick() {
-        for (MediaController controller : mediaSessionManager.getActiveSessions(new ComponentName(this, getClass()))) {
+        MediaController controller = mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).get(0);
+        if (controller != null) {
             controller.getTransportControls().skipToPrevious();
         }
     }

@@ -11,7 +11,6 @@ import android.media.session.MediaController;
 import android.media.session.MediaSessionManager;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 

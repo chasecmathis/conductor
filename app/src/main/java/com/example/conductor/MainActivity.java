@@ -28,6 +28,13 @@ public class MainActivity extends AppCompatActivity {
     public void volumeDownClicked(View v) {
         Toast.makeText(this, "Volume down button clicked", Toast.LENGTH_SHORT).show();
         this.musicController.lowerVolume();
+    }
 
+    public void settingsClicked(View v) {
+        setContentView(R.layout.settings_page);
+    }
+
+    public void settingsBackClicked(View v) {
+        setContentView(R.layout.activity_main);
     }
 }

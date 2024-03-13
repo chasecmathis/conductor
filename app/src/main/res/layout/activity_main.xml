@@ -40,7 +40,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="@string/play"/>
+                android:text="@string/play"
+                android:onClick="onPlayButtonClick"/>
 
 
             <Button
@@ -55,7 +56,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="@string/skip"/>
+                    android:text="@string/skip"
+                    android:onClick="onSkipButtonClick"/>
 
             </LinearLayout>
 
@@ -71,7 +73,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="@string/pause"/>
+                    android:text="@string/pause"
+                    android:onClick="onPauseButtonClick"/>
 
             <Button
                 android:id="@+id/button_volume_down"
@@ -86,7 +89,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="@string/previous"/>
+                android:text="@string/previous"
+                android:onClick="onPreviousButtonClick"/>
             </LinearLayout>
 
         </GridLayout>

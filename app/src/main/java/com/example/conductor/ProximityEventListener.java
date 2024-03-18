@@ -8,6 +8,8 @@ import android.hardware.SensorEventListener;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 public class ProximityEventListener implements SensorEventListener {
 
     private static final float PROXIMITY_THRESHOLD = 5.0f;
@@ -43,6 +45,8 @@ public class ProximityEventListener implements SensorEventListener {
 
     private void sendProximityAlertIntent() {
         Intent intent = new Intent("PROXIMITY_ALERT");
-        context.sendBroadcast(intent);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+//        context.sendBroadcast(intent);
+        Log.d("Broadcasting", "Bro");
     }
 }

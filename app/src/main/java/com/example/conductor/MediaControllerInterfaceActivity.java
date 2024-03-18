@@ -2,6 +2,7 @@ package com.example.conductor;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -10,6 +11,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.session.MediaController;
@@ -41,7 +43,8 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         this.proximityListener = new ProximityEventListener(this);
 
         IntentFilter filter = new IntentFilter("PROXIMITY_ALERT");
-        registerReceiver(proximityAlertReceiver, filter, RECEIVER_NOT_EXPORTED);
+        LocalBroadcastManager.getInstance(this).registerReceiver(proximityAlertReceiver,
+                filter);
 
         mediaSessionManager = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
 
@@ -140,6 +143,11 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         requestNotificationListenerPermission();
+
+        SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        sensorManager.registerListener(this.proximityListener,
+                sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY),
+                SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     protected void onPause() {
@@ -185,10 +193,12 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
 
     public void volumeUpClicked(View v) {
+        Toast.makeText(this, "Volume up button clicked", Toast.LENGTH_SHORT).show();
         this.musicController.raiseVolume();
     }
 
     public void volumeDownClicked(View v) {
+        Toast.makeText(this, "Volume down button clicked", Toast.LENGTH_SHORT).show();
         this.musicController.lowerVolume();
     }
 

@@ -1,26 +1,47 @@
 package com.example.conductor;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.hardware.SensorManager;
+import android.media.AudioManager;
 import android.media.session.MediaController;
 import android.media.session.MediaSessionManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class MediaControllerInterfaceActivity extends AppCompatActivity {
     MediaSessionManager mediaSessionManager;
 
+    private AudioManager audioManager;
+    private MusicController musicController;
+    private ProximityEventListener proximityListener;
+
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.media_controller_interface);
+
+        this.audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+        this.musicController = new MusicController(this.audioManager);
+        this.proximityListener = new ProximityEventListener(this);
+
+        IntentFilter filter = new IntentFilter("PROXIMITY_ALERT");
+        registerReceiver(proximityAlertReceiver, filter, RECEIVER_NOT_EXPORTED);
 
         mediaSessionManager = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
 
@@ -69,6 +90,10 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
             showAlertDialog();
 
         }
+        else {
+            Intent mServiceIntent = new Intent(this, MediaNotificationListener.class);
+            startService(mServiceIntent);
+        }
     }
 
     private void showAlertDialog() {
@@ -112,14 +137,15 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         skipButtonClick();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
     protected void onResume() {
         super.onResume();
         requestNotificationListenerPermission();
+    }
+
+    protected void onPause() {
+        super.onPause();
+        SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        sensorManager.unregisterListener(this.proximityListener);
     }
     // This method will be called when the button is clicked
     private void pauseButtonClick() {
@@ -146,5 +172,31 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         if (controller != null) {
             controller.getTransportControls().skipToPrevious();
         }
+    }
+
+
+    private BroadcastReceiver proximityAlertReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("DEBUG", "xCyx: detected object in close proximity");
+        }
+    };
+
+
+
+    public void volumeUpClicked(View v) {
+        this.musicController.raiseVolume();
+    }
+
+    public void volumeDownClicked(View v) {
+        this.musicController.lowerVolume();
+    }
+
+    public void settingsClicked(View v) {
+        setContentView(R.layout.settings_page);
+    }
+
+    public void settingsBackClicked(View v) {
+        setContentView(R.layout.media_controller_interface);
     }
 }

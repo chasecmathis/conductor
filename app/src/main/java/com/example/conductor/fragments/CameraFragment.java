@@ -299,6 +299,7 @@ public class CameraFragment extends Fragment {
                     bits = Bitmap.createScaledBitmap(bits, 200, 200, true);
                     bits = toGrayscale(bits);
                     //TODO Send this grayscale small bitmap to model
+                    Log.d("TEST", "Check");
                 }
             }
             samplerHandler.postDelayed(sample, SAMPLE_RATE_MS);

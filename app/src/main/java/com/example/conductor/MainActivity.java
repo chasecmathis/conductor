@@ -18,7 +18,7 @@ import com.example.conductor.fragments.CameraFragment;
 public class MainActivity extends AppCompatActivity {
 
     private final int CAMERA_PERMISSION_REQUEST_CODE = 7;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

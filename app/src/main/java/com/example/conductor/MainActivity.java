@@ -5,15 +5,20 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.hardware.camera2.CameraManager;
 import android.os.Bundle;
+import android.os.Looper;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.example.conductor.fragments.CameraFragment;
 
 public class MainActivity extends AppCompatActivity {
 
     private final int CAMERA_PERMISSION_REQUEST_CODE = 7;
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,4 +34,8 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.fragment_container, camFrag)
                 .commit();
     }
+
+
+
+
 }

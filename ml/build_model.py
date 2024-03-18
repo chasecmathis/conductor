@@ -1,6 +1,8 @@
 import os
 import tensorflow as tf
+import tf_keras as keras
 
+os.environ["TF_USE_LEGACY_KERAS"]="1"
 train_data = os.path.join('data/asl_alphabet_train/asl_alphabet_train/')
 num_classes = 29
 batch_size = 32
@@ -35,29 +37,29 @@ def load_dataset():
 
 
 def get_model():
-    model = tf.keras.models.Sequential()
+    model = keras.models.Sequential()
     # Input layer
-    model.add(tf.keras.layers.Rescaling(1. / 255, input_shape=(img_height, img_width, 1)))
-    model.add(tf.keras.layers.Conv2D(filters=16, kernel_size=(5, 5), strides=(4, 4), activation="relu"))
-    model.add(tf.keras.layers.MaxPooling2D(pool_size=(3, 3), strides=(2, 2)))
-    model.add(tf.keras.layers.BatchNormalization())
+    model.add(keras.layers.Rescaling(1. / 255, input_shape=(img_height, img_width, 1)))
+    model.add(keras.layers.Conv2D(filters=16, kernel_size=(5, 5), strides=(4, 4), activation="relu"))
+    model.add(keras.layers.MaxPooling2D(pool_size=(3, 3), strides=(2, 2)))
+    model.add(keras.layers.BatchNormalization())
 
     # Convolutional layers
-    model.add(tf.keras.layers.Conv2D(filters=32, kernel_size=(5, 5), padding="same", activation="relu"))
-    model.add(tf.keras.layers.MaxPooling2D(pool_size=(3, 3), strides=(2, 2)))
-    model.add(tf.keras.layers.BatchNormalization())
+    model.add(keras.layers.Conv2D(filters=32, kernel_size=(5, 5), padding="same", activation="relu"))
+    model.add(keras.layers.MaxPooling2D(pool_size=(3, 3), strides=(2, 2)))
+    model.add(keras.layers.BatchNormalization())
 
-    model.add(tf.keras.layers.Conv2D(filters=64, kernel_size=(5, 5), padding="same", activation="relu"))
-    model.add(tf.keras.layers.MaxPooling2D(pool_size=(3, 3), strides=(2, 2)))
-    model.add(tf.keras.layers.BatchNormalization())
+    model.add(keras.layers.Conv2D(filters=64, kernel_size=(5, 5), padding="same", activation="relu"))
+    model.add(keras.layers.MaxPooling2D(pool_size=(3, 3), strides=(2, 2)))
+    model.add(keras.layers.BatchNormalization())
 
-    # # Fully connected layers
-    model.add(tf.keras.layers.Flatten())
-    model.add(tf.keras.layers.Dense(1024, activation="relu"))
-    model.add(tf.keras.layers.Dropout(0.5))
-    model.add(tf.keras.layers.Dense(512, activation="relu"))
-    model.add(tf.keras.layers.Dropout(0.5))
-    model.add(tf.keras.layers.Dense(num_classes, activation="softmax"))
+    # # # Fully connected layers
+    model.add(keras.layers.Flatten())
+    model.add(keras.layers.Dense(1024, activation="relu"))
+    model.add(keras.layers.Dropout(0.5))
+    model.add(keras.layers.Dense(512, activation="relu"))
+    model.add(keras.layers.Dropout(0.5))
+    model.add(keras.layers.Dense(num_classes, activation="softmax"))
 
     print(model.summary())
 
@@ -66,7 +68,7 @@ def get_model():
 
 def train_model(model, train_dataset, test_dataset):
     # Compile the model
-    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
+    model.compile(optimizer=tf.keras.optimizers.legacy.Adam(learning_rate=0.001),
                   loss='sparse_categorical_crossentropy',
                   metrics=['accuracy'])
 

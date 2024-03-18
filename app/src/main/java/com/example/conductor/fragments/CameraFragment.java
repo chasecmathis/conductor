@@ -11,6 +11,7 @@ import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.OutputConfiguration;
 import android.hardware.camera2.params.SessionConfiguration;
+import android.media.ImageReader;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -47,6 +48,8 @@ public class CameraFragment extends Fragment {
     private Size previewSize;
     private Handler backgroundHandler;
     private HandlerThread backgroundThread;
+
+    private ImageReader cameraReader;
 
     private class HandlerExecutor implements Executor {
 
@@ -155,7 +158,7 @@ public class CameraFragment extends Fragment {
             outputList.add(outputConfig);
             SessionConfiguration configs = new SessionConfiguration(SessionConfiguration.SESSION_REGULAR,
                     outputList,
-                    new HandlerExecutor(backgroundHandler)/*TODO Backup thread*/,
+                    new HandlerExecutor(backgroundHandler),
                     cameraCB);
             cameraDevice.createCaptureSession(configs);
         } catch (CameraAccessException e) {
@@ -245,4 +248,16 @@ public class CameraFragment extends Fragment {
             }
         }
     }
+
+    /*
+    private void startSampling(int rate){
+        try {
+            captureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+            captureRequestBuilder.addTarget(textureView.);
+        } catch (CameraAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }*/
+
+
 }

@@ -193,12 +193,10 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
 
     public void volumeUpClicked(View v) {
-        Toast.makeText(this, "Volume up button clicked", Toast.LENGTH_SHORT).show();
         this.musicController.raiseVolume();
     }
 
     public void volumeDownClicked(View v) {
-        Toast.makeText(this, "Volume down button clicked", Toast.LENGTH_SHORT).show();
         this.musicController.lowerVolume();
     }
 

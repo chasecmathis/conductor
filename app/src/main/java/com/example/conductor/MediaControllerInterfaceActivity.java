@@ -2,8 +2,10 @@ package com.example.conductor;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -13,6 +15,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.hardware.camera2.CameraManager;
 import android.media.AudioManager;
 import android.media.session.MediaController;
 import android.media.session.MediaSessionManager;
@@ -24,8 +27,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.conductor.fragments.CameraFragment;
+
 public class MediaControllerInterfaceActivity extends AppCompatActivity {
     MediaSessionManager mediaSessionManager;
+
+    private final int CAMERA_PERMISSION_REQUEST_CODE = 7;
 
     private AudioManager audioManager;
     private MusicController musicController;
@@ -84,6 +91,17 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
                 previousButtonClick();
             }
         });
+
+
+        //Camera initialization
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
+
+        CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+        CameraFragment camFrag = new CameraFragment(cameraManager);
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, camFrag)
+                .commit();
     }
 
 

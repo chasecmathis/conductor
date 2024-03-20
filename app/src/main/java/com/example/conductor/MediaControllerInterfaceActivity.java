@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
@@ -21,6 +22,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -87,42 +89,8 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
     }
 
 
-    private void requestNotificationListenerPermission() {
-        if (!isNotificationListenerEnabled()) {
 
-            showAlertDialog();
 
-        }
-        else {
-            Intent mServiceIntent = new Intent(this, MediaNotificationListener.class);
-            startService(mServiceIntent);
-        }
-    }
-
-    private void showAlertDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Must allow notification permissions for this app")
-                .setMessage("Please grant notification permissions within the settings app")
-                .setPositiveButton("Go to settings", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Handle the "OK" button click
-                        dialog.dismiss(); // Dismiss the dialog
-                        // Open settings to enable notification access
-                        Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
-                        startActivity(intent);
-                    }
-                })
-                .show();
-    }
-
-    private boolean isNotificationListenerEnabled() {
-        // Check if the notification listener service is enabled
-        String listener = getPackageName() + "/" + MediaNotificationListener.class.getName();
-        String enabledListeners = Settings.Secure.getString(
-                getContentResolver(), "enabled_notification_listeners");
-        return enabledListeners != null && enabledListeners.contains(listener);
-    }
 
     public void onPauseButtonClick(View view){
         pauseButtonClick();
@@ -142,7 +110,10 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
     protected void onResume() {
         super.onResume();
-        requestNotificationListenerPermission();
+
+        int color = Color.parseColor("#664C33");
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        getWindow().setStatusBarColor(color);
 
         SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         sensorManager.registerListener(this.proximityListener,

@@ -1,7 +1,7 @@
 # Gradle files
 .gradle/
 build/
-ml/
+ml/data/
 .vscode/
 # Local configuration file (sdk path, etc)
 local.properties

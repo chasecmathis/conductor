@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.hardware.camera2.CameraManager;
@@ -21,6 +22,9 @@ import android.media.session.MediaController;
 import android.media.session.MediaSessionManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -28,6 +32,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.conductor.fragments.CameraFragment;
+import com.example.conductor.fragments.ShutterFragment;
 
 public class MediaControllerInterfaceActivity extends AppCompatActivity {
     MediaSessionManager mediaSessionManager;
@@ -37,6 +42,14 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
     private AudioManager audioManager;
     private MusicController musicController;
     private ProximityEventListener proximityListener;
+
+    private CameraFragment camFrag;
+    private ShutterFragment shutterFrag;
+
+    private Handler mainThread = new Handler(Looper.getMainLooper());
+
+    private Handler shutterHandler;
+    private HandlerThread shutterThread;
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
@@ -97,11 +110,10 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
 
         CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-        CameraFragment camFrag = new CameraFragment(cameraManager);
+        camFrag = new CameraFragment(cameraManager);
+        shutterFrag = new ShutterFragment();
 
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, camFrag)
-                .commit();
+        startShutterThread();
     }
 
 
@@ -166,12 +178,14 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         sensorManager.registerListener(this.proximityListener,
                 sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY),
                 SensorManager.SENSOR_DELAY_NORMAL);
+        startShutterThread();
     }
 
     protected void onPause() {
         super.onPause();
         SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         sensorManager.unregisterListener(this.proximityListener);
+        stopShutterThread();
     }
     // This method will be called when the button is clicked
     private void pauseButtonClick() {
@@ -205,6 +219,11 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d("DEBUG", "xCyx: detected object in close proximity");
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, camFrag)
+                    .commit();
+
+            shutterHandler.postDelayed(hideCamera, 10000);
         }
     };
 
@@ -224,5 +243,35 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
     public void settingsBackClicked(View v) {
         setContentView(R.layout.media_controller_interface);
+    }
+
+
+    private final Runnable hideCamera = new Runnable() {
+        @Override
+        public void run() {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, shutterFrag)
+                    .commit();
+        }
+    };
+
+    private void startShutterThread() {
+        shutterThread = new HandlerThread("shutter");
+        shutterThread.start();
+        shutterHandler = new Handler(shutterThread.getLooper());
+        shutterHandler.post(hideCamera);
+    }
+
+    private void stopShutterThread() {
+        if (shutterThread != null) {
+            shutterThread.quitSafely();
+            try {
+                shutterThread.join();
+                shutterThread = null;
+                shutterHandler = null;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

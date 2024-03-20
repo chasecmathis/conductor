@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/AppTheme"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/background_color">
 
     <TextView
         android:id="@+id/settingsTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Settings"
+        android:text="@string/settings"
         android:textSize="24sp"
         android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true"/>
@@ -16,7 +19,7 @@
         android:id="@+id/imageRateLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Image Rate:"
+        android:text="@string/image_rate"
         android:textSize="18sp"
         android:layout_below="@id/settingsTitle"
         android:layout_marginTop="16dp"
@@ -33,28 +36,31 @@
 
         <RadioButton
             android:id="@+id/radio05"
+            app:buttonTint="@color/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0.5"/>
+            android:text="@string/_0_5"/>
 
         <RadioButton
             android:id="@+id/radio1"
+            app:buttonTint="@color/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1"/>
+            android:text="@string/_1"/>
 
         <RadioButton
             android:id="@+id/radio2"
+            app:buttonTint="@color/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2"/>
+            android:text="@string/_2"/>
     </RadioGroup>
 
     <TextView
         android:id="@+id/cameraPermissionsLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Camera Permissions:"
+        android:text="@string/camera_permissions"
         android:textSize="18sp"
         android:layout_below="@id/imageRateOptions"
         android:layout_marginTop="16dp"
@@ -62,6 +68,7 @@
 
     <RadioGroup
         android:id="@+id/cameraPermissionsOptions"
+        android:buttonTint="@color/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -71,25 +78,28 @@
 
         <RadioButton
             android:id="@+id/radioNo"
+            app:buttonTint="@color/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="No"/>
+            android:text="@string/no"/>
 
         <RadioButton
             android:id="@+id/radioYes"
+            app:buttonTint="@color/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Yes"/>
+            android:text="@string/yes"/>
     </RadioGroup>
 
     <Button
         android:id="@+id/backButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Back"
+        android:text="@string/back"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="16dp"
-        android:onClick="settingsBackClicked" />
+        android:onClick="settingsBackClicked"
+        android:backgroundTint="@color/button"/>
 
 </RelativeLayout>

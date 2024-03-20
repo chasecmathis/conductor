@@ -172,10 +172,8 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
     }
 
     public void settingsClicked(View v) {
-        setContentView(R.layout.settings_page);
+        Intent settingsIntent = new Intent(this, SettingsActivity.class);
+        startActivity(settingsIntent);
     }
 
-    public void settingsBackClicked(View v) {
-        setContentView(R.layout.media_controller_interface);
-    }
 }

@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.media_controller_interface);
 
         //Camera initialization
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
@@ -95,6 +95,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void settingsBackClicked(View v) {
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.media_controller_interface);
     }
 }

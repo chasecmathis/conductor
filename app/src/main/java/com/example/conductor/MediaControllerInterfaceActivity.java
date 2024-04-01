@@ -1,11 +1,14 @@
 package com.example.conductor;
 
+import static com.example.conductor.ML_Functions.loadModelFile;
+
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -13,6 +16,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
@@ -28,12 +32,24 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.conductor.fragments.CameraFragment;
 import com.example.conductor.fragments.ShutterFragment;
 
+import org.tensorflow.lite.Interpreter;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+
+/**
+ * The main activity for Conductor
+ * Initializes key modules and handles interaction with media control
+ */
 public class MediaControllerInterfaceActivity extends AppCompatActivity {
     MediaSessionManager mediaSessionManager;
 
@@ -51,6 +67,17 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
     private Handler shutterHandler;
     private HandlerThread shutterThread;
 
+
+    private int cameraActiveInterval_MS = 10000;
+
+    /**
+     * Main initializer for starting Conductor
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,62 +85,45 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
         setContentView(R.layout.media_controller_interface);
 
+        //Set up sensors and audio control
         this.audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
         this.musicController = new MusicController(this.audioManager);
         this.proximityListener = new ProximityEventListener(this);
 
+
+        //Prepare broadcast receivers for ML and proximity messages
         IntentFilter filter = new IntentFilter("PROXIMITY_ALERT");
         LocalBroadcastManager.getInstance(this).registerReceiver(proximityAlertReceiver,
                 filter);
 
+        IntentFilter MLfilter = new IntentFilter("ML_MESSAGE");
+        LocalBroadcastManager.getInstance(this).registerReceiver(MLReceiver,
+                MLfilter);
+
+        // Start media session manager for controlling music
         mediaSessionManager = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
 
-        // Set up the button click listener
-        Button pauseButton = findViewById(R.id.button_pause);
-        pauseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Toggle play/pause behavior
-                pauseButtonClick();
-            }
-        });
+        //Start all physical playback control buttons
+        initButtons();
 
-        Button playButton = findViewById(R.id.button_play);
-        playButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Toggle play/pause behavior
-                playButtonClick();
-            }
-        });
-
-        Button skipButton = findViewById(R.id.button_skip);
-        skipButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Toggle play/pause behavior
-                skipButtonClick();
-            }
-        });
-
-        Button previousButton = findViewById(R.id.button_previous);
-        previousButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Toggle play/pause behavior
-                previousButtonClick();
-            }
-        });
-
+        //AI Model intialization
+        Interpreter tflite = null;
+        try {
+            tflite = new Interpreter(loadModelFile(this));
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
 
         //Camera initialization
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
-
         CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-        camFrag = new CameraFragment(cameraManager);
-        shutterFrag = new ShutterFragment();
 
+        //Handle fragment swapping to turn camera on and off
+        camFrag = new CameraFragment(cameraManager, tflite);
+        shutterFrag = new ShutterFragment();
         startShutterThread();
+
     }
 
 
@@ -179,6 +189,8 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
                 sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY),
                 SensorManager.SENSOR_DELAY_NORMAL);
         startShutterThread();
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     protected void onPause() {
@@ -186,7 +198,9 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         sensorManager.unregisterListener(this.proximityListener);
         stopShutterThread();
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
+
     // This method will be called when the button is clicked
     private void pauseButtonClick() {
         MediaController controller = mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).get(0);
@@ -223,11 +237,29 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
                     .replace(R.id.fragment_container, camFrag)
                     .commit();
 
-            shutterHandler.postDelayed(hideCamera, 10000);
+            shutterHandler.postDelayed(hideCamera, cameraActiveInterval_MS);
         }
     };
 
+    /**
+     * Recieves broadcast with most recent classification and handles result
+     */
+    private BroadcastReceiver MLReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int mlVal = intent.getIntExtra("VALUE", 28);
+            Log.d("MLValue", String.valueOf(mlVal));
+            /*if(mlVal == 27){
+                volumeUp();
+            }*/
+            //TODO add mapping
 
+        }
+    };
+
+    private void volumeUp(){
+        this.musicController.raiseVolume();
+    }
 
     public void volumeUpClicked(View v) {
         this.musicController.raiseVolume();
@@ -241,11 +273,14 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         setContentView(R.layout.settings_page);
     }
 
-    public void settingsBackClicked(View v) {
+    /*public void settingsBackClicked(View v) {
         setContentView(R.layout.media_controller_interface);
-    }
+    }*/
 
 
+    /**
+     * Runnable for shuttering camera
+     */
     private final Runnable hideCamera = new Runnable() {
         @Override
         public void run() {
@@ -273,5 +308,47 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * Add connections for all physical buttons
+     */
+    private void initButtons(){
+        // Set up the button click listener
+        Button pauseButton = findViewById(R.id.button_pause);
+        pauseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Toggle play/pause behavior
+                pauseButtonClick();
+            }
+        });
+
+        Button playButton = findViewById(R.id.button_play);
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Toggle play/pause behavior
+                playButtonClick();
+            }
+        });
+
+        Button skipButton = findViewById(R.id.button_skip);
+        skipButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Toggle play/pause behavior
+                skipButtonClick();
+            }
+        });
+
+        Button previousButton = findViewById(R.id.button_previous);
+        previousButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Toggle play/pause behavior
+                previousButtonClick();
+            }
+        });
     }
 }

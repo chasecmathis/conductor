@@ -1,7 +1,5 @@
 package com.example.conductor;
 
-import static com.example.conductor.ML_Functions.loadModelFile;
-
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -38,8 +36,6 @@ import android.widget.Toast;
 
 import com.example.conductor.fragments.CameraFragment;
 import com.example.conductor.fragments.ShutterFragment;
-
-import org.tensorflow.lite.Interpreter;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -106,21 +102,12 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         //Start all physical playback control buttons
         initButtons();
 
-        //AI Model intialization
-        Interpreter tflite = null;
-        try {
-            tflite = new Interpreter(loadModelFile(this));
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-
         //Camera initialization
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
         CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
 
         //Handle fragment swapping to turn camera on and off
-        camFrag = new CameraFragment(cameraManager, tflite);
+        camFrag = new CameraFragment(cameraManager);
         shutterFrag = new ShutterFragment();
         startShutterThread();
 
@@ -249,16 +236,39 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             int mlVal = intent.getIntExtra("VALUE", 28);
             Log.d("MLValue", String.valueOf(mlVal));
-            /*if(mlVal == 27){
-                volumeUp();
-            }*/
-            //TODO add mapping
 
+            switch (mlVal) {
+                case 2:
+                case 4:
+                    volumeUp();
+                    break;
+                case 1:
+                    pauseButtonClick();
+                    break;
+                case 0:
+                    playButtonClick();
+                    break;
+                case 3:
+                    volumeDown();
+                    break;
+                case 5:
+                    skipButtonClick();
+                    break;
+                case 6:
+                    previousButtonClick();
+                    break;
+                default:
+                    break;
+            }
         }
     };
 
     private void volumeUp(){
         this.musicController.raiseVolume();
+    }
+
+    private void volumeDown(){
+        this.musicController.lowerVolume();
     }
 
     public void volumeUpClicked(View v) {

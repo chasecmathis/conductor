@@ -314,10 +314,10 @@ public class CameraFragment extends Fragment {
                     bits = Bitmap.createScaledBitmap(bits, 224, 224, true);
                     //TODO Send this grayscale small bitmap to model
                     MPImage image = new BitmapImageBuilder(bits).build();
-                    int res = gestureRecognition.gestureInference(image);
+                    String label = gestureRecognition.gestureInference(image);
 
-                    if(res != -1){
-                        sendMLAlertIntent(res);
+                    if(!label.equals("None")){
+                        sendMLAlertIntent(label);
                     }
                 }
             }
@@ -326,9 +326,9 @@ public class CameraFragment extends Fragment {
         }
     };
 
-    private void sendMLAlertIntent(int mlVal) {
+    private void sendMLAlertIntent(String mlVal) {
         Intent intent = new Intent("ML_MESSAGE");
-        intent.putExtra("VALUE", mlVal);
+        intent.putExtra("LABEL", mlVal);
         Context parent = this.getContext();
         if(parent != null) {
             LocalBroadcastManager.getInstance(parent).sendBroadcast(intent);

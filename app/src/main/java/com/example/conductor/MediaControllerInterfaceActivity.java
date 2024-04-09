@@ -14,8 +14,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.AssetFileDescriptor;
-import android.graphics.Bitmap;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.hardware.camera2.CameraManager;
@@ -32,15 +30,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.example.conductor.fragments.CameraFragment;
 import com.example.conductor.fragments.ShutterFragment;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
 
 /**
  * The main activity for Conductor
@@ -50,6 +42,22 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
     MediaSessionManager mediaSessionManager;
 
     private final int CAMERA_PERMISSION_REQUEST_CODE = 7;
+
+    private final String NONE = "None";
+
+    private final String VOLUME_UP_1 = "Thumb_Up";
+
+    private final String VOLUME_UP_2 = "Pointing_Up";
+
+    private final String VOLUME_DOWN = "Thumb_Down";
+
+    private final String PAUSE = "Open_Palm";
+
+    private final String PLAY = "Closed_Fist";
+
+    private final String SKIP = "Victory";
+
+    private final String PREVIOUS = "ILoveYou";
 
     private AudioManager audioManager;
     private MusicController musicController;
@@ -234,27 +242,31 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
     private BroadcastReceiver MLReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            int mlVal = intent.getIntExtra("VALUE", 28);
-            Log.d("MLValue", String.valueOf(mlVal));
+            String label = intent.getStringExtra("LABEL");
 
-            switch (mlVal) {
-                case 2:
-                case 4:
+            if (label == null) label = "None";
+
+            Log.d("LABEL", String.valueOf(label));
+
+            // Determine which action to take based off of label
+            switch (label) {
+                case VOLUME_UP_1:
+                case VOLUME_UP_2:
                     volumeUp();
                     break;
-                case 1:
+                case PAUSE:
                     pauseButtonClick();
                     break;
-                case 0:
+                case PLAY:
                     playButtonClick();
                     break;
-                case 3:
+                case VOLUME_DOWN:
                     volumeDown();
                     break;
-                case 5:
+                case SKIP:
                     skipButtonClick();
                     break;
-                case 6:
+                case PREVIOUS:
                     previousButtonClick();
                     break;
                 default:

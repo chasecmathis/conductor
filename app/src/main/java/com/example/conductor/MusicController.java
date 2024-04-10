@@ -1,6 +1,5 @@
 package com.example.conductor;
 
-import android.content.Context;
 import android.media.AudioManager;
 
 public class MusicController {
@@ -12,12 +11,12 @@ public class MusicController {
 
     public void lowerVolume() {
         this.audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,
-            AudioManager.ADJUST_LOWER, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+            AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
     }
 
     public void raiseVolume() {
         this.audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,
-            AudioManager.ADJUST_RAISE, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+            AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
     }
 
 

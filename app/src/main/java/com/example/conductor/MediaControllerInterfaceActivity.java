@@ -164,27 +164,27 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
     // This method will be called when the button is clicked
     private void pauseButtonClick() {
-        MediaController controller = mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).get(0);
-        if (controller != null) {
+        if (mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).size() > 0) {
+            MediaController controller = mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).get(0);
             controller.getTransportControls().pause();
         }
     }
 
     private void playButtonClick() {
-        MediaController controller = mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).get(0);
-        if (controller != null) {
+        if (mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).size() > 0) {
+            MediaController controller = mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).get(0);
             controller.getTransportControls().play();
         }
     }
     private void skipButtonClick() {
-        MediaController controller = mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).get(0);
-        if (controller != null) {
+        if (mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).size() > 0) {
+            MediaController controller = mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).get(0);
             controller.getTransportControls().skipToNext();
         }
     }
     private void previousButtonClick() {
-        MediaController controller = mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).get(0);
-        if (controller != null) {
+        if (mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).size() > 0) {
+            MediaController controller = mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).get(0);
             controller.getTransportControls().skipToPrevious();
         }
     }

@@ -69,7 +69,7 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
     private HandlerThread shutterThread;
 
 
-    private int cameraActiveInterval_MS = 10000;
+    private int cameraActiveInterval_MS = 5000;
 
     /**
      * Main initializer for starting Conductor
@@ -89,7 +89,7 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         //Set up sensors and audio control
         this.audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
         this.musicController = new MusicController(this.audioManager);
-        this.proximityListener = new ProximityEventListener(this);
+        this.proximityListener = new ProximityEventListener(this, cameraActiveInterval_MS);
 
 
         //Prepare broadcast receivers for ML and proximity messages
@@ -219,27 +219,38 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
                 case VOLUME_UP_1:
                 case VOLUME_UP_2:
                     volumeUp();
+                    restartShutter();
                     break;
                 case PAUSE:
                     pauseButtonClick();
+                    restartShutter();
                     break;
                 case PLAY:
                     playButtonClick();
+                    restartShutter();
                     break;
                 case VOLUME_DOWN:
                     volumeDown();
+                    restartShutter();
                     break;
                 case SKIP:
                     skipButtonClick();
+                    restartShutter();
                     break;
                 case PREVIOUS:
                     previousButtonClick();
+                    restartShutter();
                     break;
                 default:
                     break;
             }
         }
     };
+
+    private void restartShutter(){
+        shutterHandler.removeCallbacks(hideCamera);
+        shutterHandler.postDelayed(hideCamera, cameraActiveInterval_MS);
+    }
 
     private void volumeUp(){
         this.musicController.raiseVolume();

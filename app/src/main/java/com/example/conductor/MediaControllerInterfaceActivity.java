@@ -1,7 +1,5 @@
 package com.example.conductor;
 
-import static com.example.conductor.ML_Functions.loadModelFile;
-
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -16,8 +14,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.AssetFileDescriptor;
-import android.graphics.Bitmap;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.hardware.camera2.CameraManager;
@@ -34,17 +30,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.example.conductor.fragments.CameraFragment;
 import com.example.conductor.fragments.ShutterFragment;
-
-import org.tensorflow.lite.Interpreter;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
 
 /**
  * The main activity for Conductor
@@ -54,6 +42,22 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
     MediaSessionManager mediaSessionManager;
 
     private final int CAMERA_PERMISSION_REQUEST_CODE = 7;
+
+    private final String NONE = "None";
+
+    private final String VOLUME_UP_1 = "Thumb_Up";
+
+    private final String VOLUME_UP_2 = "Pointing_Up";
+
+    private final String VOLUME_DOWN = "Thumb_Down";
+
+    private final String PAUSE = "Open_Palm";
+
+    private final String PLAY = "Closed_Fist";
+
+    private final String SKIP = "Victory";
+
+    private final String PREVIOUS = "ILoveYou";
 
     private AudioManager audioManager;
     private MusicController musicController;
@@ -106,21 +110,12 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         //Start all physical playback control buttons
         initButtons();
 
-        //AI Model intialization
-        Interpreter tflite = null;
-        try {
-            tflite = new Interpreter(loadModelFile(this));
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-
         //Camera initialization
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
         CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
 
         //Handle fragment swapping to turn camera on and off
-        camFrag = new CameraFragment(cameraManager, tflite);
+        camFrag = new CameraFragment(cameraManager);
         shutterFrag = new ShutterFragment();
         startShutterThread();
 
@@ -247,18 +242,45 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
     private BroadcastReceiver MLReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            int mlVal = intent.getIntExtra("VALUE", 28);
-            Log.d("MLValue", String.valueOf(mlVal));
-            /*if(mlVal == 27){
-                volumeUp();
-            }*/
-            //TODO add mapping
+            String label = intent.getStringExtra("LABEL");
 
+            if (label == null) label = "None";
+
+            Log.d("LABEL", String.valueOf(label));
+
+            // Determine which action to take based off of label
+            switch (label) {
+                case VOLUME_UP_1:
+                case VOLUME_UP_2:
+                    volumeUp();
+                    break;
+                case PAUSE:
+                    pauseButtonClick();
+                    break;
+                case PLAY:
+                    playButtonClick();
+                    break;
+                case VOLUME_DOWN:
+                    volumeDown();
+                    break;
+                case SKIP:
+                    skipButtonClick();
+                    break;
+                case PREVIOUS:
+                    previousButtonClick();
+                    break;
+                default:
+                    break;
+            }
         }
     };
 
     private void volumeUp(){
         this.musicController.raiseVolume();
+    }
+
+    private void volumeDown(){
+        this.musicController.lowerVolume();
     }
 
     public void volumeUpClicked(View v) {

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/AppTheme"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color">
+
+    <TextView
+        android:id="@+id/textViewConductor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/conductor"
+        android:textSize="60sp"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="250dp"
+        android:layout_marginBottom="100dp"/>
+
+    <Button
+        android:id="@+id/buttonStartConducting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/start_conducting"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="@color/button"
+        android:layout_below="@id/textViewConductor"
+        android:layout_centerHorizontal="true"
+        android:onClick="startButtonClicked"/>
+
+</RelativeLayout>

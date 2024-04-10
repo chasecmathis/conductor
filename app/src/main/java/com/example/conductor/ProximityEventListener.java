@@ -16,10 +16,13 @@ public class ProximityEventListener implements SensorEventListener {
     private static final double CYCLING_INTERVAL_MS = 1000;
 
     private long lastAlert = 0;
+
+    private int downTime;
     private Context context;
 
-    public ProximityEventListener(Context c) {
+    public ProximityEventListener(Context c, int downTime) {
         this.context = c;
+        this.downTime = downTime;
     }
 
 
@@ -36,6 +39,10 @@ public class ProximityEventListener implements SensorEventListener {
                 sendProximityAlertIntent();
             }
         }
+    }
+
+    protected void updateDowntime(int time_MS){
+        downTime = time_MS;
     }
 
     @Override

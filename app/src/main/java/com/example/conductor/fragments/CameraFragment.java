@@ -327,7 +327,7 @@ public class CameraFragment extends Fragment {
     };
 
     private void sendMLAlertIntent(String mlVal) {
-        Intent intent = new Intent("ML_MESSAGE");
+        Intent intent = new Intent("LABEL");
         intent.putExtra("LABEL", mlVal);
         Context parent = this.getContext();
         if(parent != null) {

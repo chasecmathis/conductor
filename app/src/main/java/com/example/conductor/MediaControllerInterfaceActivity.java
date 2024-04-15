@@ -97,7 +97,7 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(proximityAlertReceiver,
                 filter);
 
-        IntentFilter MLfilter = new IntentFilter("ML_MESSAGE");
+        IntentFilter MLfilter = new IntentFilter("LABEL");
         LocalBroadcastManager.getInstance(this).registerReceiver(MLReceiver,
                 MLfilter);
 
@@ -212,7 +212,7 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
             if (label == null) label = "None";
 
-            Log.d("LABEL", String.valueOf(label));
+            Log.d("LABEL", label);
 
             // Determine which action to take based off of label
             switch (label) {

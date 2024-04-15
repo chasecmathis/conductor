@@ -38,5 +38,6 @@
     <string name="_0_5">0.5</string>
     <string name="image_rate">Image Rate:</string>
     <string name="camera_shutter">Bring Hand Near Phone to Start</string>
+    <string name="login_with_spotify">Login with Spotify</string>
 
 </resources>

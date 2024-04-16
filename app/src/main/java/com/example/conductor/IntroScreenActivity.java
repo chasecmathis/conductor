@@ -63,10 +63,10 @@ public class IntroScreenActivity extends AppCompatActivity {
                 case TOKEN:
                     // Handle successful response
                     String accessToken = response.getAccessToken();
-                    // You can use the accessToken to make requests to the Spotify Web API
 
                     // Start MediaControllerInterfaceActivity on success
                     Intent toMediaControllerIntent = new Intent(this, MediaControllerInterfaceActivity.class);
+                    toMediaControllerIntent.putExtra("SpotifyAuth", true);
                     startActivity(toMediaControllerIntent);
                     break;
 

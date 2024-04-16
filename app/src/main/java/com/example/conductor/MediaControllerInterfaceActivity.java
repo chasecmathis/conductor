@@ -38,13 +38,15 @@ import com.example.conductor.fragments.ShutterFragment;
 public class MediaControllerInterfaceActivity extends AppCompatActivity {
     MediaSessionManager mediaSessionManager;
 
+    SpotifyHelper spotify;
+
+    private boolean spotifyAuth;
+
     private final int CAMERA_PERMISSION_REQUEST_CODE = 7;
 
-//    private final String NONE = "None";
+    private final String LIKE_SONG = "Thumb_Up";
 
-    private final String VOLUME_UP_1 = "Thumb_Up";
-
-    private final String VOLUME_UP_2 = "Pointing_Up";
+    private final String VOLUME_UP = "Pointing_Up";
 
     private final String VOLUME_DOWN = "Thumb_Down";
 
@@ -67,7 +69,6 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
     private Handler shutterHandler;
     private HandlerThread shutterThread;
-
 
     private int cameraActiveInterval_MS = 5000;
 
@@ -104,6 +105,12 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         // Start media session manager for controlling music
         mediaSessionManager = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
 
+        // Start spotify helper
+        this.spotify = new SpotifyHelper(this);
+        this.spotifyAuth = getIntent().getBooleanExtra("SpotifyAuth", false);
+
+
+
         //Start all physical playback control buttons
         initButtons();
 
@@ -117,10 +124,6 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         startShutterThread();
 
     }
-
-
-
-
 
     public void onPauseButtonClick(View view){
         pauseButtonClick();
@@ -136,6 +139,12 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
     public void onSkipButtonClick(View view){
         skipButtonClick();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (spotifyAuth) spotify.initializeSpotifyAppRemote();
     }
 
     protected void onResume() {
@@ -160,6 +169,12 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         sensorManager.unregisterListener(this.proximityListener);
         stopShutterThread();
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        spotify.disconnectSpotifyAppRemote();
     }
 
     // This method will be called when the button is clicked
@@ -216,8 +231,10 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
             // Determine which action to take based off of label
             switch (label) {
-                case VOLUME_UP_1:
-                case VOLUME_UP_2:
+                case LIKE_SONG:
+                    spotify.likeSpotifySong();
+                    restartShutter();
+                case VOLUME_UP:
                     volumeUp();
                     restartShutter();
                     break;

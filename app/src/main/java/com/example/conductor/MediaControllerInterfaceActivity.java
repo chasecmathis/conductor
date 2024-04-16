@@ -234,6 +234,7 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
                 case LIKE_SONG:
                     spotify.likeSpotifySong();
                     restartShutter();
+                    break;
                 case VOLUME_UP:
                     volumeUp();
                     restartShutter();

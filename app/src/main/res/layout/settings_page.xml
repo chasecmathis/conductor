@@ -57,38 +57,45 @@
     </RadioGroup>
 
     <TextView
-        android:id="@+id/cameraPermissionsLabel"
+        android:id="@+id/shutterUptimeLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/camera_permissions"
+        android:text="@string/shutter_setting_label"
         android:textSize="18sp"
         android:layout_below="@id/imageRateOptions"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"/>
 
     <RadioGroup
-        android:id="@+id/cameraPermissionsOptions"
+        android:id="@+id/shutterUptimeOptions"
         android:buttonTint="@color/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_below="@id/cameraPermissionsLabel"
+        android:layout_below="@id/shutterUptimeLabel"
         android:layout_marginTop="8dp"
         android:layout_marginStart="16dp">
 
         <RadioButton
-            android:id="@+id/radioNo"
+            android:id="@+id/radio5"
             app:buttonTint="@color/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/no"/>
+            android:text="@string/_5"/>
 
         <RadioButton
-            android:id="@+id/radioYes"
+            android:id="@+id/radio10"
             app:buttonTint="@color/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/yes"/>
+            android:text="@string/_10"/>
+
+        <RadioButton
+            android:id="@+id/radio20"
+            app:buttonTint="@color/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/_20"/>
     </RadioGroup>
 
     <Button

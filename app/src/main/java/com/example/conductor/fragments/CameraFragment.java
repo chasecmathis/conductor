@@ -52,7 +52,7 @@ public class CameraFragment extends Fragment {
 
     private static final int REQUEST_CAMERA_PERMISSION = 100;
 
-    private final int SAMPLE_RATE_MS = 2000;
+    private int SAMPLE_RATE_MS = 2000;
     private TextureView textureView;
     private CameraManager cameraManager;
     private CameraDevice cameraDevice;
@@ -89,6 +89,9 @@ public class CameraFragment extends Fragment {
 
     public CameraFragment(CameraManager cManager){
         this.cameraManager = cManager;
+    }
+    public void setSampleRate(int rate) {
+        this.SAMPLE_RATE_MS = rate;
     }
 
     @Override

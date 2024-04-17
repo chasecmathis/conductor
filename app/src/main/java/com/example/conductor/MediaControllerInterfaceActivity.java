@@ -38,13 +38,15 @@ import com.example.conductor.fragments.ShutterFragment;
 public class MediaControllerInterfaceActivity extends AppCompatActivity {
     MediaSessionManager mediaSessionManager;
 
+    SpotifyHelper spotify;
+
+    private boolean spotifyAuth;
+
     private final int CAMERA_PERMISSION_REQUEST_CODE = 7;
 
-//    private final String NONE = "None";
+    private final String LIKE_SONG = "Thumb_Up";
 
-    private final String VOLUME_UP_1 = "Thumb_Up";
-
-    private final String VOLUME_UP_2 = "Pointing_Up";
+    private final String VOLUME_UP = "Pointing_Up";
 
     private final String VOLUME_DOWN = "Thumb_Down";
 
@@ -68,16 +70,14 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
     private Handler shutterHandler;
     private HandlerThread shutterThread;
 
-
     private int cameraActiveInterval_MS = 5000;
 
     /**
      * Main initializer for starting Conductor
      *
      * @param savedInstanceState If the activity is being re-initialized after
-     *     previously being shut down then this Bundle contains the data it most
-     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
-     *
+     *                           previously being shut down then this Bundle contains the data it most
+     *                           recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
      */
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
@@ -94,15 +94,17 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
         //Prepare broadcast receivers for ML and proximity messages
         IntentFilter filter = new IntentFilter("PROXIMITY_ALERT");
-        LocalBroadcastManager.getInstance(this).registerReceiver(proximityAlertReceiver,
-                filter);
+        LocalBroadcastManager.getInstance(this).registerReceiver(proximityAlertReceiver, filter);
 
         IntentFilter MLfilter = new IntentFilter("LABEL");
-        LocalBroadcastManager.getInstance(this).registerReceiver(MLReceiver,
-                MLfilter);
+        LocalBroadcastManager.getInstance(this).registerReceiver(MLReceiver, MLfilter);
 
         // Start media session manager for controlling music
         mediaSessionManager = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
+
+        // Start spotify helper
+        this.spotify = new SpotifyHelper(this);
+        this.spotifyAuth = getIntent().getBooleanExtra("SpotifyAuth", false);
 
         //Start all physical playback control buttons
         initButtons();
@@ -118,24 +120,26 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
     }
 
-
-
-
-
-    public void onPauseButtonClick(View view){
+    public void onPauseButtonClick(View view) {
         pauseButtonClick();
     }
 
-    public void onPlayButtonClick(View view){
+    public void onPlayButtonClick(View view) {
         playButtonClick();
     }
 
-    public void onPreviousButtonClick(View view){
+    public void onPreviousButtonClick(View view) {
         previousButtonClick();
     }
 
-    public void onSkipButtonClick(View view){
+    public void onSkipButtonClick(View view) {
         skipButtonClick();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (spotifyAuth) spotify.initializeSpotifyAppRemote();
     }
 
     protected void onResume() {
@@ -146,9 +150,7 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         getWindow().setStatusBarColor(color);
 
         SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        sensorManager.registerListener(this.proximityListener,
-                sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY),
-                SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this.proximityListener, sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY), SensorManager.SENSOR_DELAY_NORMAL);
         startShutterThread();
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -160,6 +162,12 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         sensorManager.unregisterListener(this.proximityListener);
         stopShutterThread();
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        spotify.disconnectSpotifyAppRemote();
     }
 
     // This method will be called when the button is clicked
@@ -176,12 +184,14 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
             controller.getTransportControls().play();
         }
     }
+
     private void skipButtonClick() {
         if (mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).size() > 0) {
             MediaController controller = mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).get(0);
             controller.getTransportControls().skipToNext();
         }
     }
+
     private void previousButtonClick() {
         if (mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).size() > 0) {
             MediaController controller = mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).get(0);
@@ -194,9 +204,7 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d("DEBUG", "xCyx: detected object in close proximity");
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, camFrag)
-                    .commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, camFrag).commit();
 
             shutterHandler.postDelayed(hideCamera, cameraActiveInterval_MS);
         }
@@ -216,8 +224,13 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
             // Determine which action to take based off of label
             switch (label) {
-                case VOLUME_UP_1:
-                case VOLUME_UP_2:
+                case LIKE_SONG:
+                    if (spotifyAuth) {
+                        spotify.likeSpotifySong();
+                        restartShutter();
+                    }
+                    break;
+                case VOLUME_UP:
                     volumeUp();
                     restartShutter();
                     break;
@@ -247,16 +260,16 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         }
     };
 
-    private void restartShutter(){
+    private void restartShutter() {
         shutterHandler.removeCallbacks(hideCamera);
         shutterHandler.postDelayed(hideCamera, cameraActiveInterval_MS);
     }
 
-    private void volumeUp(){
+    private void volumeUp() {
         this.musicController.raiseVolume();
     }
 
-    private void volumeDown(){
+    private void volumeDown() {
         this.musicController.lowerVolume();
     }
 
@@ -284,9 +297,7 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
     private final Runnable hideCamera = new Runnable() {
         @Override
         public void run() {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, shutterFrag)
-                    .commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, shutterFrag).commit();
         }
     };
 
@@ -313,7 +324,7 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
     /**
      * Add connections for all physical buttons
      */
-    private void initButtons(){
+    private void initButtons() {
         // Set up the button click listener
         Button pauseButton = findViewById(R.id.button_pause);
         pauseButton.setOnClickListener(new View.OnClickListener() {

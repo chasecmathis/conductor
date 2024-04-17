@@ -380,7 +380,7 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         });
     }
 
-    public void tutorialClicked() {
+    public void tutorialClicked(View v) {
         Intent turorialIntent = new Intent(this, TutorialActivity.class);
         turorialIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(turorialIntent);

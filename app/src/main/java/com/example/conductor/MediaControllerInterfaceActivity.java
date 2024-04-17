@@ -106,7 +106,6 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         this.spotify = new SpotifyHelper(this);
         this.spotifyAuth = getIntent().getBooleanExtra("SpotifyAuth", false);
 
-
         //Start all physical playback control buttons
         initButtons();
 
@@ -226,8 +225,10 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
             // Determine which action to take based off of label
             switch (label) {
                 case LIKE_SONG:
-                    spotify.likeSpotifySong();
-                    restartShutter();
+                    if (spotifyAuth) {
+                        spotify.likeSpotifySong();
+                        restartShutter();
+                    }
                     break;
                 case VOLUME_UP:
                     volumeUp();

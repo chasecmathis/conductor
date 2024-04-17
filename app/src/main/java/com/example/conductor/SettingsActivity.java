@@ -24,7 +24,6 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public void settingsBackClicked(View v) {
-        Intent backToMediaInterfaceIntent = new Intent(this, MediaControllerInterfaceActivity.class);
-        startActivity(backToMediaInterfaceIntent);
+        finish();
     }
 }

@@ -39,5 +39,9 @@
     <string name="image_rate">Image Rate:</string>
     <string name="camera_shutter">Bring Hand Near Phone to Start</string>
     <string name="login_with_spotify">Login with Spotify</string>
+    <string name="song_title">Title:</string>
+    <string name="song_artist">Artist:</string>
+    <string name="song_album">Album:</string>
+    <string name="album_cover">album cover</string>
 
 </resources>

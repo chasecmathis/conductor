@@ -31,11 +31,13 @@ public class IntroScreenActivity extends AppCompatActivity {
         int color = Color.parseColor("#664C33");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         getWindow().setStatusBarColor(color);
+
+        requestNotificationListenerPermission();
+        requestCameraPermission();
     }
 
     public void startButtonClicked(View v) {
-        requestNotificationListenerPermission();
-        requestCameraPermission();
+
 
         Intent toMediaControllerIntent = new Intent(this, MediaControllerInterfaceActivity.class);
         startActivity(toMediaControllerIntent);

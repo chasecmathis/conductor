@@ -10,6 +10,7 @@
         android:layout_gravity="top"
         android:layout_marginTop="50dp">
 
+
         <TextView
             android:id="@+id/camera_shutter_text"
             android:layout_width="match_parent"
@@ -19,11 +20,22 @@
             android:textStyle="bold"
             android:textSize="20sp"/>
 
+        <ImageView
+            android:id="@+id/album_art"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_marginTop="60dp"
+            android:layout_gravity="center"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/baseline_audio_file_24"
+            android:contentDescription="@string/album_cover" />
+
         <TextView
             android:id="@+id/shutter_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="15dp"
             android:text="@string/song_title"
             android:gravity="center"
             android:textSize="20sp"/>
@@ -43,16 +55,7 @@
             android:text="@string/song_album"
             android:gravity="center"
             android:textSize="20sp"/>
-        <ImageView
-            android:id="@+id/album_art"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:layout_marginTop="10dp"
-            android:layout_gravity="center"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:src="@drawable/baseline_audio_file_24"
-            android:contentDescription="@string/album_cover" />
+
 
     </LinearLayout>
 

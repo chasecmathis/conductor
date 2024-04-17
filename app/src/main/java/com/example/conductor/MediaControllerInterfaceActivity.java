@@ -11,6 +11,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
@@ -72,6 +73,11 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
     private int cameraActiveInterval_MS = 5000;
 
+    private static final String PREFS_NAME = "settings";
+    private static final String SAMPLE_RATE_KEY = "sample_rate_key";
+    private static final String SHUTTER_UPTIME_KEY = "shutter_uptime_key";
+    private SharedPreferences sharedPreferences;
+
     /**
      * Main initializer for starting Conductor
      *
@@ -116,8 +122,6 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         //Handle fragment swapping to turn camera on and off
         camFrag = new CameraFragment(cameraManager);
         shutterFrag = new ShutterFragment(mediaSessionManager, this);
-        startShutterThread();
-
     }
 
     public void onPauseButtonClick(View view) {
@@ -154,6 +158,8 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         startShutterThread();
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        setSettings();
     }
 
     protected void onPause() {
@@ -168,6 +174,15 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         spotify.disconnectSpotifyAppRemote();
+    }
+
+    private void setSettings() {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        String shutterUptime = sharedPreferences.getString(SHUTTER_UPTIME_KEY, "10");
+        String sampleRate = sharedPreferences.getString(SAMPLE_RATE_KEY, "2");
+
+        this.cameraActiveInterval_MS = Integer.valueOf(shutterUptime) * 1000;
+        this.camFrag.setSampleRate((int) (Float.valueOf(sampleRate) * 1000));
     }
 
     // This method will be called when the button is clicked
@@ -203,8 +218,9 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
     private BroadcastReceiver proximityAlertReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d("DEBUG", "xCyx: detected object in close proximity");
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, camFrag).commit();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, camFrag)
+                    .commit();
 
             shutterHandler.postDelayed(hideCamera, cameraActiveInterval_MS);
         }
@@ -283,6 +299,7 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
     public void settingsClicked(View v) {
         Intent settingsIntent = new Intent(this, SettingsActivity.class);
+        settingsIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(settingsIntent);
     }
 

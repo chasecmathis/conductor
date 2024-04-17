@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,14 +58,14 @@ public class ShutterFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_shutter, container, false);
+        return inflater.inflate(R.layout.fragment_shutter, container, false);
 
-        return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
+
         View view = getView();
         if (view != null) {
             title_text = view.findViewById(R.id.shutter_title);
@@ -72,13 +73,15 @@ public class ShutterFragment extends Fragment {
             album_text = view.findViewById(R.id.shutter_album);
             album_art = view.findViewById(R.id.album_art);
         }
-        startMetadataThread();
+
+        metadataHandler = new Handler(Looper.getMainLooper());
+        metadataHandler.post(getMetadata);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        stopMetadataThread();
+        metadataHandler.removeCallbacks(getMetadata);
     }
 
     private final Runnable getMetadata = new Runnable() {
@@ -112,24 +115,4 @@ public class ShutterFragment extends Fragment {
             metadataHandler.postDelayed(getMetadata, metadata_MS);
         }
     };
-
-    private void startMetadataThread() {
-        metadataThread = new HandlerThread("shutter");
-        metadataThread.start();
-        metadataHandler = new Handler(metadataThread.getLooper());
-        metadataHandler.post(getMetadata);
-    }
-
-    private void stopMetadataThread() {
-        if (metadataThread != null) {
-            metadataThread.quitSafely();
-            try {
-                metadataThread.join();
-                metadataThread = null;
-                metadataHandler = null;
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 }

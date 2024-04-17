@@ -7,6 +7,9 @@ import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 
+/**
+ * Helper class for interacting with Spotify App Remote.
+ */
 public class SpotifyHelper {
 
     // Client ID
@@ -18,11 +21,18 @@ public class SpotifyHelper {
     // Spotify App Remote
     private SpotifyAppRemote mSpotifyAppRemote;
 
+    /**
+     * Constructor for SpotifyHelper.
+     *
+     * @param context The application context.
+     */
     public SpotifyHelper(Context context) {
         this.context = context;
     }
 
-    // Method to initialize mSpotifyAppRemote
+    /**
+     * Initializes the Spotify App Remote.
+     */
     public void initializeSpotifyAppRemote() {
         ConnectionParams connectionParams = new ConnectionParams.Builder(CLIENT_ID)
                 .setRedirectUri(REDIRECT_URI)
@@ -43,10 +53,16 @@ public class SpotifyHelper {
         });
     }
 
+    /**
+     * Disconnects the Spotify App Remote.
+     */
     public void disconnectSpotifyAppRemote() {
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
     }
 
+    /**
+     * Likes the currently playing song on Spotify.
+     */
     public void likeSpotifySong() {
         if (mSpotifyAppRemote != null && mSpotifyAppRemote.isConnected()) {
             mSpotifyAppRemote.getPlayerApi().getPlayerState().setResultCallback(playerState -> {

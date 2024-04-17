@@ -3,5 +3,10 @@
     <style name="Base.Theme.Conductor" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="colorPrimary">@color/background_color</item>
+        <item name="colorPrimaryDark">@color/button</item>
+        <item name="colorAccent">@color/white</item>
+        <item name="android:textColor">@color/text_gray</item>
+
     </style>
 </resources>

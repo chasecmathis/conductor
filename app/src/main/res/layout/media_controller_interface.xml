@@ -36,6 +36,7 @@
                 android:layout_gravity="start">
 
             <Button
+                style="@style/ConductorButtonStyle"
                 android:id="@+id/button_play"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -46,6 +47,7 @@
 
 
             <Button
+                style="@style/ConductorButtonStyle"
                 android:id="@+id/button_volume_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -55,6 +57,7 @@
                 android:onClick="volumeUpClicked"/>
 
                 <Button
+                    style="@style/ConductorButtonStyle"
                     android:id="@+id/button_skip"
                     android:layout_width="wrap_content"
                     android:backgroundTint="@color/button"
@@ -74,6 +77,7 @@
                 android:layout_gravity="end">
 
                 <Button
+                    style="@style/ConductorButtonStyle"
                     android:id="@+id/button_pause"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -83,6 +87,7 @@
                     android:onClick="onPauseButtonClick"/>
 
             <Button
+                style="@style/ConductorButtonStyle"
                 android:id="@+id/button_volume_down"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -93,6 +98,7 @@
 
 
             <Button
+                style="@style/ConductorButtonStyle"
                 android:id="@+id/button_previous"
                 android:layout_width="wrap_content"
                 android:backgroundTint="@color/button"
@@ -116,6 +122,7 @@
         android:layout_gravity="center">
 
         <Button
+            style="@style/ConductorButtonStyle"
             android:id="@+id/button_settings"
             android:layout_width="wrap_content"
             android:backgroundTint="@color/button"
@@ -127,6 +134,7 @@
 
         <!-- Tutorial Button -->
         <Button
+            style="@style/ConductorButtonStyle"
             android:id="@+id/button_tutorial"
             android:layout_width="wrap_content"
             android:backgroundTint="@color/button"

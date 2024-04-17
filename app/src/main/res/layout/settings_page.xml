@@ -39,6 +39,7 @@
             app:buttonTint="@color/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/text_gray"
             android:text="@string/_0_5"/>
 
         <RadioButton
@@ -46,13 +47,16 @@
             app:buttonTint="@color/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/_1"/>
+            android:textColor="@color/text_gray"
+            android:text="@string/_1"
+            android:checked="true"/>
 
         <RadioButton
             android:id="@+id/radio2"
             app:buttonTint="@color/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/text_gray"
             android:text="@string/_2"/>
     </RadioGroup>
 
@@ -81,6 +85,7 @@
             app:buttonTint="@color/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/text_gray"
             android:text="@string/_5"/>
 
         <RadioButton
@@ -88,17 +93,21 @@
             app:buttonTint="@color/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/_10"/>
+            android:textColor="@color/text_gray"
+            android:text="@string/_10"
+            android:checked="true"/>
 
         <RadioButton
             android:id="@+id/radio20"
             app:buttonTint="@color/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/text_gray"
             android:text="@string/_20"/>
     </RadioGroup>
 
     <Button
+        style="@style/ConductorButtonStyle"
         android:id="@+id/backButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -1,9 +1,6 @@
 package com.example.conductor.fragments;
 
-import static androidx.core.content.ContextCompat.getSystemService;
-
 import android.content.ComponentName;
-import android.content.Context;
 import android.media.MediaMetadata;
 import android.media.session.MediaController;
 import android.media.session.MediaSessionManager;
@@ -13,7 +10,6 @@ import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +19,6 @@ import com.example.conductor.MediaControllerInterfaceActivity;
 import com.example.conductor.R;
 import android.widget.ImageView;
 import android.graphics.Bitmap;
-import com.squareup.picasso.Picasso;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -63,17 +58,20 @@ public class ShutterFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_shutter, container, false);
-        title_text = view.findViewById(R.id.shutter_title);
-        artist_text = view.findViewById(R.id.shutter_artist);
-        album_text = view.findViewById(R.id.shutter_album);
-        album_art = view.findViewById(R.id.album_art);
+
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
+        View view = getView();
+        if (view != null) {
+            title_text = view.findViewById(R.id.shutter_title);
+            artist_text = view.findViewById(R.id.shutter_artist);
+            album_text = view.findViewById(R.id.shutter_album);
+            album_art = view.findViewById(R.id.album_art);
+        }
         startMetadataThread();
     }
 

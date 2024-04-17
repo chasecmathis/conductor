@@ -20,6 +20,10 @@
             android:exported="false"
             android:label="@string/title_activity_settings" />
         <activity
+            android:name=".TutorialActivity"
+            android:exported="false"
+            android:label="@string/title_activity_tutorial" />
+        <activity
             android:name=".IntroScreenActivity"
             android:exported="true">
             <intent-filter>

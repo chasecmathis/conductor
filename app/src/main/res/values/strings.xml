@@ -14,6 +14,7 @@
     <string name="start_conducting">Start Conducting</string>
     <string name="conductor">Conductor</string>
     <string name="title_activity_settings">SettingsActivity</string>
+    <string name="title_activity_tutorial">TutorialActivity</string>
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>

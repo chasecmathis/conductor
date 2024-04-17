@@ -113,7 +113,7 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
         //Handle fragment swapping to turn camera on and off
         camFrag = new CameraFragment(cameraManager);
-        shutterFrag = new ShutterFragment();
+        shutterFrag = new ShutterFragment(mediaSessionManager, this);
         startShutterThread();
 
     }

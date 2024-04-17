@@ -1,66 +1,137 @@
 package com.example.conductor.fragments;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
+import android.content.ComponentName;
+import android.content.Context;
+import android.media.MediaMetadata;
+import android.media.session.MediaController;
+import android.media.session.MediaSessionManager;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.example.conductor.MediaControllerInterfaceActivity;
 import com.example.conductor.R;
+import android.widget.ImageView;
+import android.graphics.Bitmap;
+import com.squareup.picasso.Picasso;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link ShutterFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class ShutterFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private MediaSessionManager mediaSessionManager;
+    private MediaControllerInterfaceActivity mediaControllerInterfaceActivity;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private final int metadata_MS = 500;
+
+
+    private HandlerThread metadataThread;
+    private Handler metadataHandler;
+
+    private TextView title_text;
+    private TextView artist_text;
+    private TextView album_text;
+    private ImageView album_art;
 
     public ShutterFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ShutterFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ShutterFragment newInstance(String param1, String param2) {
-        ShutterFragment fragment = new ShutterFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    public ShutterFragment(MediaSessionManager mediaSessionManager, MediaControllerInterfaceActivity mediaControllerInterfaceActivity) {
+        this.mediaSessionManager = mediaSessionManager;
+        this.mediaControllerInterfaceActivity = mediaControllerInterfaceActivity;
     }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_shutter, container, false);
+        View view = inflater.inflate(R.layout.fragment_shutter, container, false);
+        title_text = view.findViewById(R.id.shutter_title);
+        artist_text = view.findViewById(R.id.shutter_artist);
+        album_text = view.findViewById(R.id.shutter_album);
+        album_art = view.findViewById(R.id.album_art);
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        startMetadataThread();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        stopMetadataThread();
+    }
+
+    private final Runnable getMetadata = new Runnable() {
+        @Override
+        public void run() {
+            // Get metadata
+
+            if (mediaSessionManager.getActiveSessions(new ComponentName(mediaControllerInterfaceActivity, getClass())).size() > 0) {
+                MediaController controller = mediaSessionManager.getActiveSessions(new ComponentName(mediaControllerInterfaceActivity, getClass())).get(0);
+                MediaMetadata metadata = controller.getMetadata();
+                if (metadata != null) {
+                    if (metadata.getText(MediaMetadata.METADATA_KEY_TITLE) != null) {
+                        String title = getString(R.string.song_title) + " " + metadata.getText(MediaMetadata.METADATA_KEY_TITLE);
+                        title_text.setText(title);
+                    }
+                    if (metadata.getText(MediaMetadata.METADATA_KEY_ARTIST) != null) {
+                        String artist = getString(R.string.song_artist) + " " + metadata.getText(MediaMetadata.METADATA_KEY_ARTIST);
+                        artist_text.setText(artist);
+                    }
+                    if (metadata.getText(MediaMetadata.METADATA_KEY_ALBUM) != null) {
+                        String album = getString(R.string.song_album) + " " + metadata.getText(MediaMetadata.METADATA_KEY_ALBUM);
+                        album_text.setText(album);
+                    }
+
+                    if (metadata.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART) != null) {
+                        Bitmap album_cover = metadata.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART);
+                        album_art.setImageBitmap(album_cover);
+                    }
+                }
+            }
+            metadataHandler.postDelayed(getMetadata, metadata_MS);
+        }
+    };
+
+    private void startMetadataThread() {
+        metadataThread = new HandlerThread("shutter");
+        metadataThread.start();
+        metadataHandler = new Handler(metadataThread.getLooper());
+        metadataHandler.post(getMetadata);
+    }
+
+    private void stopMetadataThread() {
+        if (metadataThread != null) {
+            metadataThread.quitSafely();
+            try {
+                metadataThread.join();
+                metadataThread = null;
+                metadataHandler = null;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

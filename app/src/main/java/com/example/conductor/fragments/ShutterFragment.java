@@ -32,13 +32,8 @@ public class ShutterFragment extends Fragment {
 
     private final int metadata_MS = 500;
 
-
-    private HandlerThread metadataThread;
     private Handler metadataHandler;
 
-    private TextView title_text;
-    private TextView artist_text;
-    private TextView album_text;
     private ImageView album_art;
 
     public ShutterFragment() {
@@ -68,9 +63,6 @@ public class ShutterFragment extends Fragment {
 
         View view = getView();
         if (view != null) {
-            title_text = view.findViewById(R.id.shutter_title);
-            artist_text = view.findViewById(R.id.shutter_artist);
-            album_text = view.findViewById(R.id.shutter_album);
             album_art = view.findViewById(R.id.album_art);
         }
 
@@ -93,19 +85,6 @@ public class ShutterFragment extends Fragment {
                 MediaController controller = mediaSessionManager.getActiveSessions(new ComponentName(mediaControllerInterfaceActivity, getClass())).get(0);
                 MediaMetadata metadata = controller.getMetadata();
                 if (metadata != null) {
-                    if (metadata.getText(MediaMetadata.METADATA_KEY_TITLE) != null) {
-                        String title = getString(R.string.song_title) + " " + metadata.getText(MediaMetadata.METADATA_KEY_TITLE);
-                        title_text.setText(title);
-                    }
-                    if (metadata.getText(MediaMetadata.METADATA_KEY_ARTIST) != null) {
-                        String artist = getString(R.string.song_artist) + " " + metadata.getText(MediaMetadata.METADATA_KEY_ARTIST);
-                        artist_text.setText(artist);
-                    }
-                    if (metadata.getText(MediaMetadata.METADATA_KEY_ALBUM) != null) {
-                        String album = getString(R.string.song_album) + " " + metadata.getText(MediaMetadata.METADATA_KEY_ALBUM);
-                        album_text.setText(album);
-                    }
-
                     if (metadata.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART) != null) {
                         Bitmap album_cover = metadata.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART);
                         album_art.setImageBitmap(album_cover);

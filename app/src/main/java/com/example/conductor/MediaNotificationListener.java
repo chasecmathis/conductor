@@ -17,8 +17,6 @@ public class MediaNotificationListener extends NotificationListenerService {
         }
     }
 
-
-
     @Override
     public void onNotificationRemoved(StatusBarNotification sbn) {
         // Handle notification removal if needed

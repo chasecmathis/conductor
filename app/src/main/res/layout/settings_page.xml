@@ -25,12 +25,22 @@
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"/>
 
+    <TextView
+        android:id="@+id/imageRateDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/image_rate_description"
+        android:textSize="13sp"
+        android:layout_below="@id/imageRateLabel"
+        android:layout_marginTop="6dp"
+        android:layout_marginStart="16dp"/>
+
     <RadioGroup
         android:id="@+id/imageRateOptions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_below="@id/imageRateLabel"
+        android:layout_below="@id/imageRateDescription"
         android:layout_marginTop="8dp"
         android:layout_marginStart="16dp">
 
@@ -70,13 +80,23 @@
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"/>
 
+    <TextView
+        android:id="@+id/shutterUptimeDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/shutter_uptime_description"
+        android:textSize="13sp"
+        android:layout_below="@id/shutterUptimeLabel"
+        android:layout_marginTop="6dp"
+        android:layout_marginStart="16dp"/>
+
     <RadioGroup
         android:id="@+id/shutterUptimeOptions"
         android:buttonTint="@color/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_below="@id/shutterUptimeLabel"
+        android:layout_below="@id/shutterUptimeDescription"
         android:layout_marginTop="8dp"
         android:layout_marginStart="16dp">
 
@@ -105,6 +125,195 @@
             android:textColor="@color/text_gray"
             android:text="@string/_20"/>
     </RadioGroup>
+
+
+
+    <TextView
+        android:id="@+id/gestureMappingLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/gesture_mapping"
+        android:textSize="18sp"
+        android:layout_below="@id/shutterUptimeOptions"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"/>
+
+    <TextView
+        android:id="@+id/gestureMappingDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/gesture_control_description"
+        android:textSize="13sp"
+        android:layout_below="@id/gestureMappingLabel"
+        android:layout_marginTop="6dp"
+        android:layout_marginStart="16dp"/>
+
+    <!-- First column -->
+    <GridLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:columnCount="2"
+        android:rowCount="7"
+        android:orientation="horizontal"
+        android:layout_below="@id/gestureMappingDescription"
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="16dp"
+        android:id="@+id/mappings_grid">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="@string/vol_up"
+            android:layout_column="0"
+            android:layout_row="0"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="@string/vol_down"
+            android:layout_column="0"
+            android:layout_row="1"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="@string/play"
+            android:layout_column="0"
+            android:layout_row="2"
+            android:layout_marginBottom="8dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="@string/pause"
+            android:layout_column="0"
+            android:layout_row="3"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="@string/skip"
+            android:layout_column="0"
+            android:layout_row="4"
+            android:layout_marginBottom="8dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="@string/previous"
+            android:layout_column="0"
+            android:layout_row="5"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="@string/like"
+            android:layout_column="0"
+            android:layout_row="6"
+            android:layout_marginBottom="8dp"/>
+
+
+        <Spinner
+            android:id="@+id/up_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/dropdown_options"
+            android:popupBackground="@color/background_color"
+            android:textSize="18sp"
+            android:layout_column="1"
+            android:layout_row="0"
+            android:layout_marginStart="30dp"
+            android:backgroundTint="@color/button"
+            android:layout_marginBottom="8dp"/>
+
+        <Spinner
+            android:id="@+id/down_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/dropdown_options"
+            android:popupBackground="@color/background_color"
+            android:textSize="18sp"
+            android:layout_column="1"
+            android:layout_row="1"
+            android:layout_marginStart="30dp"
+            android:backgroundTint="@color/button"
+            android:layout_marginBottom="8dp"/>
+
+        <Spinner
+            android:id="@+id/play_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/dropdown_options"
+            android:popupBackground="@color/background_color"
+            android:textSize="18sp"
+            android:layout_column="1"
+            android:layout_row="2"
+            android:layout_marginStart="30dp"
+            android:backgroundTint="@color/button"
+            android:layout_marginBottom="8dp"/>
+
+        <Spinner
+            android:id="@+id/pause_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/dropdown_options"
+            android:popupBackground="@color/background_color"
+            android:textSize="18sp"
+            android:layout_column="1"
+            android:layout_row="3"
+            android:layout_marginStart="30dp"
+            android:backgroundTint="@color/button"
+            android:layout_marginBottom="8dp"/>
+
+        <Spinner
+            android:id="@+id/skip_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/dropdown_options"
+            android:popupBackground="@color/background_color"
+            android:textSize="18sp"
+            android:layout_column="1"
+            android:layout_row="4"
+            android:layout_marginStart="30dp"
+            android:backgroundTint="@color/button"
+            android:layout_marginBottom="8dp"/>
+
+        <Spinner
+            android:id="@+id/previous_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/dropdown_options"
+            android:popupBackground="@color/background_color"
+            android:textSize="18sp"
+            android:layout_column="1"
+            android:layout_row="5"
+            android:layout_marginStart="30dp"
+            android:backgroundTint="@color/button"
+            android:layout_marginBottom="8dp"/>
+
+        <Spinner
+            android:id="@+id/like_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/dropdown_options"
+            android:popupBackground="@color/background_color"
+            android:textSize="18sp"
+            android:layout_column="1"
+            android:layout_row="6"
+            android:layout_marginStart="30dp"
+            android:backgroundTint="@color/button"
+            android:layout_marginBottom="8dp"/>
+
+    </GridLayout>
 
     <Button
         style="@style/ConductorButtonStyle"

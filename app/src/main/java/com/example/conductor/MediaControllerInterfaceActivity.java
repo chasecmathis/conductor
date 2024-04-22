@@ -46,19 +46,22 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
     private final int CAMERA_PERMISSION_REQUEST_CODE = 7;
 
-    private final String LIKE_SONG = "Thumb_Up";
+    private String LIKE_SONG = "Thumb_Up";
 
-    private final String VOLUME_UP = "Pointing_Up";
+    private String VOLUME_UP = "Pointing_Up";
 
-    private final String VOLUME_DOWN = "Thumb_Down";
+    private String VOLUME_DOWN = "Thumb_Down";
 
-    private final String PAUSE = "Open_Palm";
+    private String PAUSE = "Open_Palm";
 
-    private final String PLAY = "Closed_Fist";
+    private String PLAY = "Closed_Fist";
 
-    private final String SKIP = "Victory";
+    private String SKIP = "Victory";
 
-    private final String PREVIOUS = "ILoveYou";
+    private String PREVIOUS = "ILoveYou";
+
+    private final String[] GESTURE_MAP = {"Thumb_Up", "Pointing_Up", "Thumb_Down", "Closed_Fist", "Open_Palm", "Victory", "ILoveYou"};
+
 
     private AudioManager audioManager;
     private MusicController musicController;
@@ -77,6 +80,14 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
     private static final String PREFS_NAME = "settings";
     private static final String SAMPLE_RATE_KEY = "sample_rate_key";
     private static final String SHUTTER_UPTIME_KEY = "shutter_uptime_key";
+    private static final String UP_GESTURE_KEY = "up_gesture_key";
+    private static final String DOWN_GESTURE_KEY = "down_gesture_key";
+    private static final String PLAY_GESTURE_KEY = "play_gesture_key";
+    private static final String PAUSE_GESTURE_KEY = "pause_gesture_key";
+    private static final String SKIP_GESTURE_KEY = "skip_gesture_key";
+    private static final String PREVIOUS_GESTURE_KEY = "previous_gesture_key";
+    private static final String LIKE_GESTURE_KEY = "like_gesture_key";
+
     private SharedPreferences sharedPreferences;
 
     /**
@@ -149,18 +160,17 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
     protected void onResume() {
         super.onResume();
-
         int color = Color.parseColor("#664C33");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         getWindow().setStatusBarColor(color);
 
         SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         sensorManager.registerListener(this.proximityListener, sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY), SensorManager.SENSOR_DELAY_NORMAL);
-        startShutterThread();
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         setSettings();
+        startShutterThread();
     }
 
     protected void onPause() {
@@ -182,8 +192,27 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         String shutterUptime = sharedPreferences.getString(SHUTTER_UPTIME_KEY, "10");
         String sampleRate = sharedPreferences.getString(SAMPLE_RATE_KEY, "2");
 
+
         this.cameraActiveInterval_MS = Integer.valueOf(shutterUptime) * 1000;
         this.camFrag.setSampleRate((int) (Float.valueOf(sampleRate) * 1000));
+        this.proximityListener.updateDowntime(cameraActiveInterval_MS);
+
+
+        //Retrieve custom mappings
+        int storedValue = sharedPreferences.getInt(UP_GESTURE_KEY, 1);
+        VOLUME_UP = GESTURE_MAP[storedValue];
+        storedValue = sharedPreferences.getInt(DOWN_GESTURE_KEY, 2);
+        VOLUME_DOWN = GESTURE_MAP[storedValue];
+        storedValue = sharedPreferences.getInt(SKIP_GESTURE_KEY, 5);
+        SKIP = GESTURE_MAP[storedValue];
+        storedValue = sharedPreferences.getInt(PREVIOUS_GESTURE_KEY, 6);
+        PREVIOUS = GESTURE_MAP[storedValue];
+        storedValue = sharedPreferences.getInt(PLAY_GESTURE_KEY, 3);
+        PLAY = GESTURE_MAP[storedValue];
+        storedValue = sharedPreferences.getInt(PAUSE_GESTURE_KEY, 4);
+        PAUSE = GESTURE_MAP[storedValue];
+        storedValue = sharedPreferences.getInt(LIKE_GESTURE_KEY, 0);
+        LIKE_SONG = GESTURE_MAP[storedValue];
     }
 
     // This method will be called when the button is clicked
@@ -244,39 +273,35 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
             Log.d("LABEL", label);
 
             // Determine which action to take based off of label
-            switch (label) {
-                case LIKE_SONG:
-                    if (spotifyAuth) {
-                        spotify.likeSpotifySong();
-                        restartShutter();
-                    }
-                    break;
-                case VOLUME_UP:
-                    volumeUp();
+            if(label.equals(LIKE_SONG)) {
+                if (spotifyAuth) {
+                    spotify.likeSpotifySong();
                     restartShutter();
-                    break;
-                case PAUSE:
-                    pauseButtonClick();
-                    restartShutter();
-                    break;
-                case PLAY:
-                    playButtonClick();
-                    restartShutter();
-                    break;
-                case VOLUME_DOWN:
-                    volumeDown();
-                    restartShutter();
-                    break;
-                case SKIP:
-                    skipButtonClick();
-                    restartShutter();
-                    break;
-                case PREVIOUS:
-                    previousButtonClick();
-                    restartShutter();
-                    break;
-                default:
-                    break;
+                }
+            }
+            else if(label.equals(VOLUME_UP)) {
+                volumeUp();
+                restartShutter();
+            }
+            else if(label.equals(PAUSE)) {
+                pauseButtonClick();
+                restartShutter();
+            }
+            else if(label.equals(PLAY)) {
+                playButtonClick();
+                restartShutter();
+            }
+            else if(label.equals(VOLUME_DOWN)) {
+                volumeDown();
+                restartShutter();
+            }
+            else if(label.equals(SKIP)) {
+                skipButtonClick();
+                restartShutter();
+            }
+            else if(label.equals(PREVIOUS)) {
+                previousButtonClick();
+                restartShutter();
             }
         }
     };

@@ -1,158 +1,145 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="bottom"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".MediaControllerInterfaceActivity"
+    style="@style/Base.Theme.Conductor"
     android:background="@color/background_color">
 
-        <!-- Welcome Label -->
-        <TextView
-            android:id="@+id/welcome_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/title"
-            android:textSize="24sp"
-            android:layout_marginTop="16dp"
-            android:layout_centerHorizontal="true"/>
-
-        <!-- 2x3 Grid of Buttons -->
-        <GridLayout
-            android:id="@+id/control_grid"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/welcome_label"
-            android:layout_marginTop="16dp"
-            android:columnCount="2"
-            android:rowCount="1">
-
-            <LinearLayout
-                android:id="@+id/left_column"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_gravity="start">
-
-            <Button
-                style="@style/ConductorButtonStyle"
-                android:id="@+id/button_play"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/play"
-                android:backgroundTint="@color/button"
-                android:onClick="onPlayButtonClick"/>
-
-
-            <Button
-                style="@style/ConductorButtonStyle"
-                android:id="@+id/button_volume_up"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/button"
-                android:layout_gravity="center"
-                android:text="@string/vol_up"
-                android:onClick="volumeUpClicked"/>
-
-                <Button
-                    style="@style/ConductorButtonStyle"
-                    android:id="@+id/button_skip"
-                    android:layout_width="wrap_content"
-                    android:backgroundTint="@color/button"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="@string/skip"
-                    android:onClick="onSkipButtonClick"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/right_column"
-                android:backgroundTint="@color/button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_gravity="end">
-
-                <Button
-                    style="@style/ConductorButtonStyle"
-                    android:id="@+id/button_pause"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:backgroundTint="@color/button"
-                    android:text="@string/pause"
-                    android:onClick="onPauseButtonClick"/>
-
-            <Button
-                style="@style/ConductorButtonStyle"
-                android:id="@+id/button_volume_down"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:backgroundTint="@color/button"
-                android:text="@string/vol_down"
-                android:onClick="volumeDownClicked"/>
-
-
-            <Button
-                style="@style/ConductorButtonStyle"
-                android:id="@+id/button_previous"
-                android:layout_width="wrap_content"
-                android:backgroundTint="@color/button"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/previous"
-                android:onClick="onPreviousButtonClick"/>
-            </LinearLayout>
-
-        </GridLayout>
-
-        <!-- Settings Button -->
-
-    <LinearLayout
-        android:id="@+id/options"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_below="@id/control_grid"
-        android:layout_centerInParent="true"
-        android:layout_gravity="center">
-
-        <Button
-            style="@style/ConductorButtonStyle"
-            android:id="@+id/button_settings"
-            android:layout_width="wrap_content"
-            android:backgroundTint="@color/button"
-            android:layout_height="wrap_content"
-            android:text="@string/settings"
-            android:layout_marginTop="16dp"
-            android:onClick="settingsClicked"
-            android:layout_marginEnd="10dp"/>
-
-        <!-- Tutorial Button -->
-        <Button
-            style="@style/ConductorButtonStyle"
-            android:id="@+id/button_tutorial"
-            android:layout_width="wrap_content"
-            android:backgroundTint="@color/button"
-            android:layout_height="wrap_content"
-            android:text="@string/tutorial"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="10dp"
-            android:onClick="tutorialClicked"/>
-
-
-    </LinearLayout>
-
+    <!-- Fragment Container -->
     <FrameLayout
         android:id="@+id/fragment_container"
-        android:layout_below="@+id/options"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerInParent="true"/>
+        android:layout_height="400dp"
+        android:layout_alignParentTop="true" />
 
+    <LinearLayout
+        android:id="@+id/song_metadata"
+        android:layout_below="@id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/shutter_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:textStyle="italic"
+            android:gravity="center"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textSize="32sp"/>
 
-    </RelativeLayout>
+        <TextView
+            android:id="@+id/shutter_artist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="15sp"/>
+
+        <TextView
+            android:id="@+id/shutter_album"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textSize="15sp"/>
+    </LinearLayout>
+    <!-- Control Buttons -->
+    <LinearLayout
+        android:id="@+id/control_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_horizontal"
+        android:background="@null"
+        android:padding="5dp"
+        android:layout_marginBottom="10dp">
+        <SeekBar
+            android:thumbTint="@color/button"
+            android:progressTint="@color/button"
+            android:id="@+id/seekbar"
+            android:layout_marginHorizontal="32dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+        <TextView
+            android:id="@+id/song_position"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:textSize="12sp"
+            android:textStyle="italic"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginHorizontal="32dp"/>
+        <!-- Top Row of Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <!-- Previous Button -->
+            <ImageButton
+                android:id="@+id/button_previous"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:src="@drawable/ic_previous"
+                android:onClick="onPreviousButtonClick"
+                android:padding="5dp" />
+
+            <!-- Pause Button -->
+            <ImageButton
+                android:id="@+id/button_play_pause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:src="@drawable/ic_play"
+                android:onClick="onPauseButtonClick"
+                android:padding="5dp" />
+
+            <!-- Skip Button -->
+            <ImageButton
+                android:id="@+id/button_skip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:src="@drawable/ic_skip"
+                android:onClick="onSkipButtonClick"
+                android:padding="5dp" />
+        </LinearLayout>
+
+        <!-- Bottom Row of Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop ="10dp"
+            android:gravity="center">
+
+            <!-- Heart Button -->
+            <ImageButton
+                android:id="@+id/button_heart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:src="@drawable/ic_favorite"
+                android:onClick="onHeartButtonClick"
+                android:padding="5dp"
+                />
+
+            <!-- Settings Button -->
+            <ImageButton
+                android:id="@+id/button_settings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:src="@drawable/ic_settings"
+                android:onClick="settingsClicked"
+                android:padding="5dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

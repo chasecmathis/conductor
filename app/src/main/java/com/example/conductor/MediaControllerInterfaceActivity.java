@@ -3,6 +3,7 @@ package com.example.conductor;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.Manifest;
@@ -218,11 +219,15 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
     private BroadcastReceiver proximityAlertReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, camFrag)
-                    .commit();
+            FragmentManager fragmentManager = getSupportFragmentManager();
 
-            shutterHandler.postDelayed(hideCamera, cameraActiveInterval_MS);
+            if (!fragmentManager.isDestroyed()) {
+                fragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, camFrag)
+                        .commit();
+
+                shutterHandler.postDelayed(hideCamera, cameraActiveInterval_MS);
+            }
         }
     };
 
@@ -277,8 +282,10 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
     };
 
     private void restartShutter() {
-        shutterHandler.removeCallbacks(hideCamera);
-        shutterHandler.postDelayed(hideCamera, cameraActiveInterval_MS);
+        if (shutterHandler != null) {
+            shutterHandler.removeCallbacks(hideCamera);
+            shutterHandler.postDelayed(hideCamera, cameraActiveInterval_MS);
+        }
     }
 
     private void volumeUp() {
@@ -314,7 +321,11 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
     private final Runnable hideCamera = new Runnable() {
         @Override
         public void run() {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, shutterFrag).commit();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+
+            if (!fragmentManager.isDestroyed()) {
+                fragmentManager.beginTransaction().replace(R.id.fragment_container, shutterFrag).commit();
+            }
         }
     };
 

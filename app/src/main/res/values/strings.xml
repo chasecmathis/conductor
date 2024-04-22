@@ -14,6 +14,7 @@
     <string name="start_conducting">Start Conducting</string>
     <string name="conductor">Conductor</string>
     <string name="title_activity_settings">SettingsActivity</string>
+    <string name="title_activity_tutorial">TutorialActivity</string>
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
@@ -63,5 +64,12 @@
     <string name="image_rate_description">Minimum time between each recognized gesture</string>
     <string name="shutter_uptime_description">Time after last gesture before camera shutoff</string>
     <string name="gesture_control_description">Gesture to music control options</string>
+    <string name="conductor_tutorial">Conductor Tutorial</string>
+    <string name="steps_explanation">Here are the steps to use Conductor:\n
+        1. Play music on your favorite app (or least favorite, it won\'t matter).\n
+        2. Open conductor.\n
+        3. When you want to give commands, hold you palm in front of the camera to activate it.\n
+        4. Control your music using the hand signals shown below! Have fun! :)\n\n</string>
+    <string name="mappings_header">Here are your current gesture mappings:</string>
 
 </resources>

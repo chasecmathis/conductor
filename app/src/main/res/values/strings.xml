@@ -39,13 +39,29 @@
     <string name="_5">5</string>
     <string name="_10">10</string>
     <string name="_20">20</string>
-    <string name="shutter_setting_label">Shutter Uptime (how long camera stays on after activation)</string>
-    <string name="image_rate">Image Rate:</string>
+    <string name="shutter_setting_label">Shutter Uptime (seconds):</string>
+    <string name="image_rate">Sample Rate (seconds):</string>
     <string name="camera_shutter">Bring Hand Near Phone to Start</string>
     <string name="login_with_spotify">Login with Spotify</string>
     <string name="song_title">Title:</string>
     <string name="song_artist">Artist:</string>
     <string name="song_album">Album:</string>
     <string name="album_cover">album cover</string>
+    <string name="like">Like</string>
+    <string-array name="dropdown_options">
+        <item>Thumbs Up</item>
+        <item>Point Up</item>
+        <item>Thumbs Down</item>
+        <item>Fist</item>
+        <item>Open Hand</item>
+        <item>Peace Sign</item>
+        <item>Rock On</item>
+    </string-array>
+
+    <string name="gesture_mapping">Control Gestures:</string>
+    <string name="activation_distance_label">Camera Activation Distance (cm):</string>
+    <string name="image_rate_description">Minimum time between each recognized gesture</string>
+    <string name="shutter_uptime_description">Time after last gesture before camera shutoff</string>
+    <string name="gesture_control_description">Gesture to music control options</string>
 
 </resources>

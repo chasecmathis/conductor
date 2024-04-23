@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,27 +28,16 @@ import android.graphics.Bitmap;
  */
 public class ShutterFragment extends Fragment {
 
-    private MediaSessionManager mediaSessionManager;
-    private MediaControllerInterfaceActivity mediaControllerInterfaceActivity;
+    private MediaController mediaController;
 
-    private final int metadata_MS = 500;
-
-
-    private HandlerThread metadataThread;
-    private Handler metadataHandler;
-
-    private TextView title_text;
-    private TextView artist_text;
-    private TextView album_text;
     private ImageView album_art;
 
     public ShutterFragment() {
         // Required empty public constructor
     }
 
-    public ShutterFragment(MediaSessionManager mediaSessionManager, MediaControllerInterfaceActivity mediaControllerInterfaceActivity) {
-        this.mediaSessionManager = mediaSessionManager;
-        this.mediaControllerInterfaceActivity = mediaControllerInterfaceActivity;
+    public ShutterFragment(MediaController mediaController) {
+        this.mediaController = mediaController;
     }
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,51 +58,22 @@ public class ShutterFragment extends Fragment {
 
         View view = getView();
         if (view != null) {
-            title_text = view.findViewById(R.id.shutter_title);
-            artist_text = view.findViewById(R.id.shutter_artist);
-            album_text = view.findViewById(R.id.shutter_album);
             album_art = view.findViewById(R.id.album_art);
         }
-
-        metadataHandler = new Handler(Looper.getMainLooper());
-        metadataHandler.post(getMetadata);
+        updateAlbumArt();
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        metadataHandler.removeCallbacks(getMetadata);
-    }
 
-    private final Runnable getMetadata = new Runnable() {
-        @Override
-        public void run() {
-            // Get metadata
-
-            if (mediaSessionManager.getActiveSessions(new ComponentName(mediaControllerInterfaceActivity, getClass())).size() > 0) {
-                MediaController controller = mediaSessionManager.getActiveSessions(new ComponentName(mediaControllerInterfaceActivity, getClass())).get(0);
-                MediaMetadata metadata = controller.getMetadata();
-                if (metadata != null) {
-                    if (metadata.getText(MediaMetadata.METADATA_KEY_TITLE) != null) {
-                        String title = getString(R.string.song_title) + " " + metadata.getText(MediaMetadata.METADATA_KEY_TITLE);
-                        title_text.setText(title);
-                    }
-                    if (metadata.getText(MediaMetadata.METADATA_KEY_ARTIST) != null) {
-                        String artist = getString(R.string.song_artist) + " " + metadata.getText(MediaMetadata.METADATA_KEY_ARTIST);
-                        artist_text.setText(artist);
-                    }
-                    if (metadata.getText(MediaMetadata.METADATA_KEY_ALBUM) != null) {
-                        String album = getString(R.string.song_album) + " " + metadata.getText(MediaMetadata.METADATA_KEY_ALBUM);
-                        album_text.setText(album);
-                    }
-
-                    if (metadata.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART) != null) {
-                        Bitmap album_cover = metadata.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART);
-                        album_art.setImageBitmap(album_cover);
-                    }
+    public void updateAlbumArt() {
+        View view = getView();
+        if (view != null) {
+            MediaMetadata metadata = mediaController.getMetadata();
+            if (metadata != null) {
+                if (metadata.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART) != null) {
+                    Bitmap album_cover = metadata.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART);
+                    album_art.setImageBitmap(album_cover);
                 }
             }
-            metadataHandler.postDelayed(getMetadata, metadata_MS);
         }
-    };
+    }
 }

@@ -13,11 +13,9 @@ public class MediaNotificationListener extends NotificationListenerService {
     public void onNotificationPosted(StatusBarNotification sbn) {
         // Check if the notification is a media notification and handle as needed
         if (isMediaNotification(sbn)) {
-            Log.d(TAG, "Media Notification Posted: " + sbn.getPackageName());
+            // Log.d(TAG, "Media Notification Posted: " + sbn.getPackageName());
         }
     }
-
-
 
     @Override
     public void onNotificationRemoved(StatusBarNotification sbn) {

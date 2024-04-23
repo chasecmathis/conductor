@@ -20,10 +20,6 @@ import com.spotify.sdk.android.auth.AuthorizationResponse;
 
 public class IntroScreenActivity extends AppCompatActivity {
 
-    private final String REDIRECT_URI = "conductor://callback";
-
-    private final String CLIENT_ID = "7f2c54fd18184696b745e45d29052624";
-
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
@@ -41,60 +37,6 @@ public class IntroScreenActivity extends AppCompatActivity {
 
         Intent toMediaControllerIntent = new Intent(this, MediaControllerInterfaceActivity.class);
         startActivity(toMediaControllerIntent);
-    }
-
-    public void loginWithSpotify(View view) {
-        AuthorizationRequest.Builder builder =
-                new AuthorizationRequest.Builder(CLIENT_ID, AuthorizationResponse.Type.TOKEN, REDIRECT_URI);
-        builder.setScopes(new String[]{"user-read-private", "playlist-read", "playlist-read-private"});
-        AuthorizationRequest request = builder.build();
-
-        AuthorizationClient.openLoginActivity(this, REQUEST_CODE, request);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        super.onActivityResult(requestCode, resultCode, intent);
-
-        // Check if result comes from the correct activity
-        if (requestCode == REQUEST_CODE) {
-            AuthorizationResponse response = AuthorizationClient.getResponse(resultCode, intent);
-
-            switch (response.getType()) {
-                // Response was successful and contains auth token
-                case TOKEN:
-                    // Handle successful response
-                    String accessToken = response.getAccessToken();
-
-                    // Start MediaControllerInterfaceActivity on success
-                    Intent toMediaControllerIntent = new Intent(this, MediaControllerInterfaceActivity.class);
-                    toMediaControllerIntent.putExtra("SpotifyAuth", true);
-                    startActivity(toMediaControllerIntent);
-                    break;
-
-                // Auth flow returned an error
-                case ERROR:
-                    // Handle error response
-                    String error = response.getError();
-
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setTitle("Error")
-                            .setMessage(error)
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // Dismiss the dialog
-                                    dialog.dismiss();
-                                }
-                            })
-                            .show();
-                    break;
-
-                // Most likely auth flow was canceled
-                default:
-                    break;
-            }
-        }
     }
 
 

@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.Manifest;
@@ -20,6 +21,7 @@ import android.hardware.camera2.CameraManager;
 import android.media.AudioManager;
 import android.media.MediaMetadata;
 import android.media.session.MediaController;
+import android.media.session.MediaSession;
 import android.media.session.MediaSessionManager;
 import android.media.session.PlaybackState;
 import android.os.Build;
@@ -27,6 +29,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
+import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -46,9 +49,9 @@ import java.util.List;
 public class MediaControllerInterfaceActivity extends AppCompatActivity {
     MediaSessionManager mediaSessionManager;
 
-    SpotifyHelper spotify;
+    MediaController mediaController;
 
-    private boolean spotifyAuth;
+    SpotifyHelper spotify;
 
     private final int CAMERA_PERMISSION_REQUEST_CODE = 7;
 
@@ -124,12 +127,15 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         // Start media session manager for controlling music
         mediaSessionManager = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
 
+        if (!mediaSessionManager.getActiveSessions(new ComponentName(MediaControllerInterfaceActivity.this, getClass())).isEmpty()) {
+            List<MediaController> controllers = mediaSessionManager.getActiveSessions(new ComponentName(MediaControllerInterfaceActivity.this, getClass()));
+            // Check if there are active media controllers
+            if (!controllers.isEmpty())
+                this.mediaController = controllers.get(0);
+        }
+
         // Start spotify helper
         this.spotify = new SpotifyHelper(this);
-        this.spotifyAuth = getIntent().getBooleanExtra("SpotifyAuth", false);
-
-        //Start all physical playback control buttons
-        initButtons();
 
         //Camera initialization
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
@@ -137,10 +143,12 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
         //Handle fragment swapping to turn camera on and off
         camFrag = new CameraFragment(cameraManager);
-        shutterFrag = new ShutterFragment(mediaSessionManager, this);
+        shutterFrag = new ShutterFragment(mediaController);
 
         seekBar = findViewById(R.id.seekbar);
-        seekBarManager = new SeekBarManager(mediaSessionManager, seekBar, this);
+        title_text = findViewById(R.id.shutter_title);
+        artist_text = findViewById(R.id.shutter_artist);
+        album_text = findViewById(R.id.shutter_album);
     }
 
     public void onPauseButtonClick(View view) {
@@ -158,13 +166,11 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (spotifyAuth) spotify.initializeSpotifyAppRemote();
+        spotify.initializeSpotifyAppRemote();
     }
 
     protected void onResume() {
         super.onResume();
-
-        Log.d("On resume", "");
 
         int color = Color.parseColor("#664C33");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -178,12 +184,20 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
         setSettings();
 
-        title_text = findViewById(R.id.shutter_title);
-        artist_text = findViewById(R.id.shutter_artist);
-        album_text = findViewById(R.id.shutter_album);
+        if (!mediaSessionManager.getActiveSessions(new ComponentName(MediaControllerInterfaceActivity.this, getClass())).isEmpty()) {
+            List<MediaController> controllers = mediaSessionManager.getActiveSessions(new ComponentName(MediaControllerInterfaceActivity.this, getClass()));
+            // Check if there are active media controllers
+            if (!controllers.isEmpty())
+                this.mediaController = controllers.get(0);
+        }
+
+        //Start all physical playback control buttons
+        initButtons();
 
         registerMediaControllerCallback();
+        seekBarManager = new SeekBarManager(mediaController, seekBar, this);
         startSeekUpdates();
+        updateMetadata();
     }
 
     protected void onPause() {
@@ -233,65 +247,61 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
     // Method to update metadata
     private void updateMetadata() {
         // Update title, artist, and album views
-        if (!mediaSessionManager.getActiveSessions(new ComponentName(MediaControllerInterfaceActivity.this, getClass())).isEmpty()) {
-            MediaController controller = mediaSessionManager.getActiveSessions(new ComponentName(MediaControllerInterfaceActivity.this, getClass())).get(0);
-            MediaMetadata metadata = controller.getMetadata();
-            if (metadata != null) {
-                if (metadata.getText(MediaMetadata.METADATA_KEY_TITLE) != null) {
-                    String title = metadata.getText(MediaMetadata.METADATA_KEY_TITLE).toString();
-                    title_text.setText(title);
-                }
-                if (metadata.getText(MediaMetadata.METADATA_KEY_ARTIST) != null) {
-                    String artist = metadata.getText(MediaMetadata.METADATA_KEY_ARTIST).toString();
-                    artist_text.setText(artist);
-                }
-                if (metadata.getText(MediaMetadata.METADATA_KEY_ALBUM) != null) {
-                    String album = metadata.getText(MediaMetadata.METADATA_KEY_ALBUM).toString();
-                    album_text.setText(album);
-                }
+        MediaMetadata metadata = mediaController.getMetadata();
+        if (metadata != null) {
+            shutterFrag.updateAlbumArt();
 
-                PlaybackState state = controller.getPlaybackState();
-                ImageButton playPauseButton = findViewById(R.id.button_play_pause);
-                if (state != null && state.getState() == PlaybackState.STATE_PLAYING)
-                    playPauseButton.setImageResource(R.drawable.ic_pause);
-                else playPauseButton.setImageResource(R.drawable.ic_play);
-
-                ImageButton favoriteButton = findViewById(R.id.button_heart);
-                if (spotify.isLiked().getNow(false)) favoriteButton.setImageResource(R.drawable.ic_favorite);
-                else favoriteButton.setImageResource(R.drawable.ic_favorite_border);
+            if (metadata.getText(MediaMetadata.METADATA_KEY_TITLE) != null) {
+                String title = metadata.getText(MediaMetadata.METADATA_KEY_TITLE).toString();
+                title_text.setText(title);
             }
+            if (metadata.getText(MediaMetadata.METADATA_KEY_ARTIST) != null) {
+                String artist = metadata.getText(MediaMetadata.METADATA_KEY_ARTIST).toString();
+                artist_text.setText(artist);
+            }
+            if (metadata.getText(MediaMetadata.METADATA_KEY_ALBUM) != null) {
+                String album = metadata.getText(MediaMetadata.METADATA_KEY_ALBUM).toString();
+                album_text.setText(album);
+            }
+
+            PlaybackState state = mediaController.getPlaybackState();
+            ImageButton playPauseButton = findViewById(R.id.button_play_pause);
+            if (state != null && state.getState() == PlaybackState.STATE_PLAYING)
+                playPauseButton.setImageResource(R.drawable.ic_pause);
+            else playPauseButton.setImageResource(R.drawable.ic_play);
+
+            ImageButton favoriteButton = findViewById(R.id.button_heart);
+
+            spotify.isLiked().thenAccept(liked -> {
+                if (liked) favoriteButton.setImageResource(R.drawable.ic_favorite);
+                else favoriteButton.setImageResource(R.drawable.ic_favorite_border);
+            });
         }
     }
 
     // This method will be called when the button is clicked
     private void pauseButtonClick() {
-        if (!mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).isEmpty()) {
-            MediaController controller = mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).get(0);
-            controller.getTransportControls().pause();
-        }
+        mediaController.getTransportControls().pause();
     }
 
     private void playButtonClick() {
-        if (!mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).isEmpty()) {
-            MediaController controller = mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).get(0);
-            controller.getTransportControls().play();
-        }
+            mediaController.getTransportControls().play();
     }
 
     private void skipButtonClick() {
-        if (!mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).isEmpty()) {
-            MediaController controller = mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).get(0);
-            controller.getTransportControls().skipToNext();
-        }
+            mediaController.getTransportControls().skipToNext();
     }
 
     private void previousButtonClick() {
-        if (!mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).isEmpty()) {
-            MediaController controller = mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).get(0);
-            controller.getTransportControls().skipToPrevious();
-        }
+            mediaController.getTransportControls().skipToPrevious();
     }
 
+    private void likeButtonClick() {
+        spotify.isLiked().thenAccept(liked -> {
+            if (liked) spotify.unlikeSpotifySong();
+            else spotify.likeSpotifySong();
+        });
+    }
 
     private final BroadcastReceiver proximityAlertReceiver = new BroadcastReceiver() {
         @Override
@@ -319,10 +329,8 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
             // Determine which action to take based off of label
             switch (label) {
                 case LIKE_SONG:
-                    if (spotifyAuth) {
-                        spotify.likeSpotifySong();
-                        restartShutter();
-                    }
+                    likeButtonClick();
+                    restartShutter();
                     break;
                 case VOLUME_UP:
                     volumeUp();
@@ -411,16 +419,13 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         ImageButton playPauseButton = findViewById(R.id.button_play_pause);
         playPauseButton.setOnClickListener(v -> {
             // Toggle play/pause behavior
-            if (!mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).isEmpty()) {
-                MediaController controller = mediaSessionManager.getActiveSessions(new ComponentName(this, getClass())).get(0);
-                PlaybackState state = controller.getPlaybackState();
-                if (state != null && state.getState() == PlaybackState.STATE_PLAYING) {
-                    pauseButtonClick();
-                    playPauseButton.setImageResource(R.drawable.ic_play);
-                } else if (state != null && state.getState() == PlaybackState.STATE_PAUSED) {
-                    playButtonClick();
-                    playPauseButton.setImageResource(R.drawable.ic_pause);
-                }
+            PlaybackState state = mediaController.getPlaybackState();
+            if (state != null && state.getState() == PlaybackState.STATE_PLAYING) {
+                pauseButtonClick();
+                playPauseButton.setImageResource(R.drawable.ic_play);
+            } else if (state != null && state.getState() == PlaybackState.STATE_PAUSED) {
+                playButtonClick();
+                playPauseButton.setImageResource(R.drawable.ic_pause);
             }
         });
 
@@ -437,43 +442,32 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         });
 
         ImageButton favoriteButton = findViewById(R.id.button_heart);
-        favoriteButton.setOnClickListener(v -> {
-            spotify.isLiked().thenAccept(liked -> {
-                if (liked) spotify.unlikeSpotifySong();
-                else spotify.likeSpotifySong();
-            });
-        });
+        favoriteButton.setOnClickListener(v -> likeButtonClick());
     }
 
     private void registerMediaControllerCallback() {
-        if (!mediaSessionManager.getActiveSessions(new ComponentName(MediaControllerInterfaceActivity.this, getClass())).isEmpty()) {
-            List<MediaController> controllers = mediaSessionManager.getActiveSessions(new ComponentName(MediaControllerInterfaceActivity.this, getClass()));
-            // Check if there are active media controllers
-            if (!controllers.isEmpty()) {
-                MediaController mediaController = controllers.get(0);
-                Log.d("Controller", "Controller is " + mediaController.getPackageName());
-                mediaController.registerCallback(mediaControllerCallback);
-            }
-        }
+        mediaController.registerCallback(mediaControllerCallback);
     }
 
     private void unregisterMediaControllerCallback() {
-        if (!mediaSessionManager.getActiveSessions(new ComponentName(MediaControllerInterfaceActivity.this, getClass())).isEmpty()) {
-            List<MediaController> controllers = mediaSessionManager.getActiveSessions(new ComponentName(MediaControllerInterfaceActivity.this, getClass()));
-            // Check if there are active media controllers
-            if (!controllers.isEmpty()) {
-                MediaController mediaController = controllers.get(0);
-                mediaController.unregisterCallback(mediaControllerCallback);
-            }
-        }
+        mediaController.unregisterCallback(mediaControllerCallback);
     }
 
     private final MediaController.Callback mediaControllerCallback = new MediaController.Callback() {
         @Override
-        public void onPlaybackStateChanged(PlaybackState state) {
-            // Handle playback state changes here
-            Log.d("Playback State", "Changed: " + state.toString());
+        public void onMetadataChanged(@Nullable MediaMetadata metadata) {
+            super.onMetadataChanged(metadata);
             updateMetadata();
+        }
+
+        @Override
+        public void onPlaybackStateChanged(@Nullable PlaybackState state) {
+            super.onPlaybackStateChanged(state);
+
+            if (state != null && (state.getState() == PlaybackState.STATE_PLAYING ||
+                state.getState() == PlaybackState.STATE_PAUSED)) {
+                updateMetadata();
+            }
         }
     };
 }

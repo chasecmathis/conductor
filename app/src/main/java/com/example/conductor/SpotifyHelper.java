@@ -47,6 +47,12 @@ public class SpotifyHelper {
             public void onConnected(SpotifyAppRemote spotifyAppRemote) {
                 mSpotifyAppRemote = spotifyAppRemote;
                 Log.d("Spotify", "Connected to Spotify App Remote");
+
+                ImageButton favorite_button = (ImageButton) activity.findViewById(R.id.button_heart);
+                isLiked().thenAccept(liked -> {
+                    if (liked) favorite_button.setImageResource(R.drawable.ic_favorite);
+                    else favorite_button.setImageResource(R.drawable.ic_favorite_border);
+                });
             }
 
             @Override

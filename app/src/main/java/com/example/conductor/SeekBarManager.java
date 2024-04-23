@@ -11,14 +11,14 @@ import android.widget.TextView;
 
 public class SeekBarManager implements SeekBar.OnSeekBarChangeListener {
 
-    private MediaSessionManager mediaSessionManager;
+    private MediaController mediaController;
     private SeekBar seekBar;
     private TextView songPositionTextView;
 
     private MediaControllerInterfaceActivity activity;
 
-    public SeekBarManager(MediaSessionManager mediaSessionManager, SeekBar seekBar, MediaControllerInterfaceActivity activity) {
-        this.mediaSessionManager = mediaSessionManager;
+    public SeekBarManager(MediaController mediaController, SeekBar seekBar, MediaControllerInterfaceActivity activity) {
+        this.mediaController = mediaController;
         this.seekBar = seekBar;
         this.songPositionTextView = activity.findViewById(R.id.song_position);
         this.activity = activity;
@@ -28,10 +28,8 @@ public class SeekBarManager implements SeekBar.OnSeekBarChangeListener {
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         // Update the current playback position based on seek bar progress
         Log.d("SongProgress", String.valueOf(progress));
-        if (fromUser && mediaSessionManager.getActiveSessions(new ComponentName(activity, getClass())).size() > 0) {
-            MediaController controller = mediaSessionManager.getActiveSessions(new ComponentName(activity, getClass())).get(0);
-            Log.d("SongProgress", String.valueOf(progress));
-            controller.getTransportControls().seekTo(progress);
+        if (fromUser) {
+            mediaController.getTransportControls().seekTo(progress);
         }
     }
 
@@ -48,15 +46,14 @@ public class SeekBarManager implements SeekBar.OnSeekBarChangeListener {
     }
 
     public void updateSeekBarProgress() {
-        MediaController controller = mediaSessionManager.getActiveSessions(new ComponentName(activity, getClass())).get(0);
-        MediaMetadata metadata = controller.getMetadata();
+        MediaMetadata metadata = mediaController.getMetadata();
         if (metadata != null) {
             long totalTime = metadata.getLong(MediaMetadata.METADATA_KEY_DURATION);
             seekBar.setMax((int) totalTime);
 
             long elapsedTime;
-            if (controller.getPlaybackState() != null) {
-                elapsedTime = controller.getPlaybackState().getPosition();
+            if (mediaController.getPlaybackState() != null) {
+                elapsedTime = mediaController.getPlaybackState().getPosition();
             } else {
                 elapsedTime = 0;
             }

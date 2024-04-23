@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,12 +28,7 @@ import android.graphics.Bitmap;
  */
 public class ShutterFragment extends Fragment {
 
-    private MediaSessionManager mediaSessionManager;
-    private MediaControllerInterfaceActivity mediaControllerInterfaceActivity;
-
-    private final int metadata_MS = 500;
-
-    private Handler metadataHandler;
+    private MediaController mediaController;
 
     private ImageView album_art;
 
@@ -40,9 +36,8 @@ public class ShutterFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public ShutterFragment(MediaSessionManager mediaSessionManager, MediaControllerInterfaceActivity mediaControllerInterfaceActivity) {
-        this.mediaSessionManager = mediaSessionManager;
-        this.mediaControllerInterfaceActivity = mediaControllerInterfaceActivity;
+    public ShutterFragment(MediaController mediaController) {
+        this.mediaController = mediaController;
     }
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,33 +60,20 @@ public class ShutterFragment extends Fragment {
         if (view != null) {
             album_art = view.findViewById(R.id.album_art);
         }
-
-        metadataHandler = new Handler(Looper.getMainLooper());
-        metadataHandler.post(getMetadata);
+        updateAlbumArt();
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        metadataHandler.removeCallbacks(getMetadata);
-    }
 
-    private final Runnable getMetadata = new Runnable() {
-        @Override
-        public void run() {
-            // Get metadata
-
-            if (mediaSessionManager.getActiveSessions(new ComponentName(mediaControllerInterfaceActivity, getClass())).size() > 0) {
-                MediaController controller = mediaSessionManager.getActiveSessions(new ComponentName(mediaControllerInterfaceActivity, getClass())).get(0);
-                MediaMetadata metadata = controller.getMetadata();
-                if (metadata != null) {
-                    if (metadata.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART) != null) {
-                        Bitmap album_cover = metadata.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART);
-                        album_art.setImageBitmap(album_cover);
-                    }
+    public void updateAlbumArt() {
+        View view = getView();
+        if (view != null) {
+            MediaMetadata metadata = mediaController.getMetadata();
+            if (metadata != null) {
+                if (metadata.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART) != null) {
+                    Bitmap album_cover = metadata.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART);
+                    album_art.setImageBitmap(album_cover);
                 }
             }
-            metadataHandler.postDelayed(getMetadata, metadata_MS);
         }
-    };
+    }
 }

@@ -27,16 +27,4 @@
         android:layout_centerHorizontal="true"
         android:onClick="startButtonClicked"/>
 
-    <Button
-        android:id="@+id/buttonLoginSpotify"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/login_with_spotify"
-        android:textColor="#FFFFFF"
-        android:backgroundTint="@color/spotify"
-        android:layout_below="@id/buttonStartConducting"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:onClick="loginWithSpotify"/>
-
 </RelativeLayout>

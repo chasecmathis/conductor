@@ -3,6 +3,7 @@ package com.example.conductor;
 import android.app.Activity;
 import android.util.Log;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
@@ -72,8 +73,8 @@ public class SpotifyHelper {
     /**
      * Likes the currently playing song on Spotify.
      */
-    public void likeSpotifySong() {
-        if (mSpotifyAppRemote != null && mSpotifyAppRemote.isConnected()) {
+    public void likeSpotifySong(boolean playingSpotify) {
+        if (mSpotifyAppRemote != null && mSpotifyAppRemote.isConnected() && playingSpotify) {
             mSpotifyAppRemote.getPlayerApi().getPlayerState().setResultCallback(playerState -> {
                 String trackUri = playerState.track.uri;
                 mSpotifyAppRemote.getUserApi().addToLibrary(trackUri).setResultCallback(ignored -> {
@@ -82,6 +83,8 @@ public class SpotifyHelper {
                     button.setImageResource(R.drawable.ic_favorite);
                 });
             });
+        } else {
+            showToast();
         }
     }
 
@@ -102,8 +105,8 @@ public class SpotifyHelper {
     }
 
 
-    public void unlikeSpotifySong() {
-        if (mSpotifyAppRemote != null && mSpotifyAppRemote.isConnected()) {
+    public void unlikeSpotifySong(boolean playingSpotify) {
+        if (mSpotifyAppRemote != null && mSpotifyAppRemote.isConnected() && playingSpotify) {
             mSpotifyAppRemote.getPlayerApi().getPlayerState().setResultCallback(playerState -> {
                 String trackUri = playerState.track.uri;
                 mSpotifyAppRemote.getUserApi().removeFromLibrary(trackUri).setResultCallback(ignored -> {
@@ -112,6 +115,13 @@ public class SpotifyHelper {
                     button.setImageResource(R.drawable.ic_favorite_border);
                 });
             });
+        } else {
+            showToast();
         }
+    }
+
+    // Helper method to display a toast
+    private void showToast() {
+        Toast.makeText(activity, "Spotify not connected", Toast.LENGTH_SHORT).show();
     }
 }

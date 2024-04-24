@@ -14,6 +14,9 @@ public class SeekBarManager implements SeekBar.OnSeekBarChangeListener {
     private MediaController mediaController;
     private SeekBar seekBar;
     private TextView songPositionTextView;
+    git
+    private MediaControllerInterfaceActivity activity;
+    int progress;
 
     public SeekBarManager(MediaController mediaController, SeekBar seekBar, MediaControllerInterfaceActivity activity) {
         this.mediaController = mediaController;
@@ -24,23 +27,21 @@ public class SeekBarManager implements SeekBar.OnSeekBarChangeListener {
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         // Update the current playback position based on seek bar progress
-        Log.d("xCyx SongProgress", String.valueOf(progress));
-        if (fromUser) {
-            mediaController.getTransportControls().seekTo(progress);
-        }
-
+        Log.d("SongProgress", String.valueOf(progress));
+        this.progress = progress;
     }
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
-        // Do nothing when the user starts tracking touch on the seek bar
         mediaController.getTransportControls().pause();
         Log.d("xCyx SongProgress", "onStart");
     }
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-        // Do nothing when the user stops tracking touch on the seek bar
+        // Make music catch up to progress bar
+        mediaController.getTransportControls().seekTo(progress);
+        mediaController.getTransportControls().play();
         Log.d("xCyx SongProgress", "onStop");
     }
 

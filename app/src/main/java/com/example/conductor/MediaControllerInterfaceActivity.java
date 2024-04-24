@@ -191,6 +191,7 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
         registerMediaControllerCallback();
         seekBarManager = new SeekBarManager(mediaController, seekBar, this);
+        seekBar.setOnSeekBarChangeListener(seekBarManager);
         startSeekUpdates();
         updateMetadata();
     }

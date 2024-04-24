@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:layout_gravity="center"
-        android:scaleX="0.75"
-        android:scaleY="1"
+        android:scaleX="1"
+        android:scaleY="1.33"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>

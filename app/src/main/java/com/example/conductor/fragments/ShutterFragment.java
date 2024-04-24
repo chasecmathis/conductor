@@ -66,7 +66,7 @@ public class ShutterFragment extends Fragment {
 
     public void updateAlbumArt() {
         View view = getView();
-        if (view != null) {
+        if (view != null && mediaController != null) {
             MediaMetadata metadata = mediaController.getMetadata();
             if (metadata != null) {
                 if (metadata.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART) != null) {

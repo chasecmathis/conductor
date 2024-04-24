@@ -7,6 +7,12 @@
     <string name="thumbs_down">Thumbs Down</string>
     <string name="peace_sign">Peace Sign</string>
     <string name="rock_on">Rock On</string>
+    <string name="vol_up">Volume Up</string>
+    <string name="vol_down">Volume Down</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="skip">Skip</string>
+    <string name="previous">Previous</string>
     <string name="settings">Settings</string>
     <string name="tutorial">Tutorial</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>

@@ -34,7 +34,6 @@ public class TutorialActivity extends AppCompatActivity {
 
         setContentView(R.layout.tutorial_page);
 
-        TextView pointing_up_text = null;
         TextView fist_text = findViewById(R.id.fist_text);
         TextView open_hand_text = findViewById(R.id.open_hand_text);
         TextView thumbs_up_text = findViewById(R.id.thumbs_up_text);
@@ -43,7 +42,7 @@ public class TutorialActivity extends AppCompatActivity {
         TextView rock_on_text = findViewById(R.id.rock_on_text);
         TextView like_text = findViewById(R.id.like_text);
 
-        TextView [] mapping = {thumbs_up_text, pointing_up_text, thumbs_down_text, fist_text, open_hand_text, peace_sign_text, rock_on_text};
+        TextView [] mapping = {thumbs_up_text, like_text, thumbs_down_text, fist_text, open_hand_text, peace_sign_text, rock_on_text};
 
         SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 

@@ -36,6 +36,7 @@
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="conductor_description">Touchless audio control</string>
     <string name="back">Back</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>

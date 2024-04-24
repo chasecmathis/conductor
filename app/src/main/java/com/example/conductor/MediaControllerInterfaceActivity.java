@@ -320,8 +320,9 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
     private void likeButtonClick() {
         spotify.isLiked().thenAccept(liked -> {
-            if (liked) spotify.unlikeSpotifySong();
-            else spotify.likeSpotifySong();
+            boolean spotifyPlaying = mediaController.getPackageName().equals("com.spotify.music");
+            if (liked) spotify.unlikeSpotifySong(spotifyPlaying);
+            else spotify.likeSpotifySong(spotifyPlaying);
         });
     }
 

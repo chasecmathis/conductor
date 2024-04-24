@@ -151,18 +151,6 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         album_text = findViewById(R.id.shutter_album);
     }
 
-    public void onPauseButtonClick(View view) {
-        pauseButtonClick();
-    }
-
-    public void onPreviousButtonClick(View view) {
-        previousButtonClick();
-    }
-
-    public void onSkipButtonClick(View view) {
-        skipButtonClick();
-    }
-
     @Override
     protected void onStart() {
         super.onStart();

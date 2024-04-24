@@ -88,7 +88,6 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:src="@drawable/ic_previous"
-                android:onClick="onPreviousButtonClick"
                 android:padding="5dp" />
 
             <!-- Pause Button -->
@@ -98,7 +97,6 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:src="@drawable/ic_play"
-                android:onClick="onPauseButtonClick"
                 android:padding="5dp" />
 
             <!-- Skip Button -->
@@ -108,7 +106,6 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:src="@drawable/ic_skip"
-                android:onClick="onSkipButtonClick"
                 android:padding="5dp" />
         </LinearLayout>
 
@@ -127,7 +124,6 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:src="@drawable/ic_favorite"
-                android:onClick="onHeartButtonClick"
                 android:padding="5dp"
                 />
 
@@ -139,6 +135,16 @@
                 android:background="@null"
                 android:src="@drawable/ic_settings"
                 android:onClick="settingsClicked"
+                android:padding="5dp" />
+
+            <!-- Tutorial Button -->
+            <ImageButton
+                android:id="@+id/button_tutorial"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:src="@drawable/ic_help"
+                android:onClick="tutorialClicked"
                 android:padding="5dp" />
         </LinearLayout>
     </LinearLayout>

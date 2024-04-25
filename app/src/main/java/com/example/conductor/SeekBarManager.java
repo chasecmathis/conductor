@@ -14,7 +14,6 @@ public class SeekBarManager implements SeekBar.OnSeekBarChangeListener {
     private MediaController mediaController;
     private SeekBar seekBar;
     private TextView songPositionTextView;
-    git
     private MediaControllerInterfaceActivity activity;
     int progress;
 

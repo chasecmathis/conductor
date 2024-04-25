@@ -337,15 +337,14 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
             FragmentManager fragmentManager = getSupportFragmentManager();
 
             if (!fragmentManager.isDestroyed()) {
-                fragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, camFrag)
-                        .commit();
                 if(cameraOn){
                     shutterHandler.removeCallbacks(hideCamera);
                     shutterHandler.post(hideCamera);
-                    cameraOn = false;
                 }
                 else{
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.fragment_container, camFrag)
+                            .commit();
                     cameraOn = true;
                     shutterHandler.postDelayed(hideCamera, cameraActiveInterval_MS);
                 }
@@ -429,6 +428,7 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
             if (!fragmentManager.isDestroyed()) {
                 fragmentManager.beginTransaction().replace(R.id.fragment_container, shutterFrag).commit();
+                cameraOn = false;
             }
         }
     };

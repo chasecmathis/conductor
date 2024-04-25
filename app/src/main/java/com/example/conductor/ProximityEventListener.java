@@ -33,7 +33,7 @@ public class ProximityEventListener implements SensorEventListener {
             float distance = event.values[0];
             long timeElapsed = System.currentTimeMillis() - this.lastAlert;
             //Only trigger alert if it's been at least 10 seconds since the last one
-            if (distance < PROXIMITY_THRESHOLD && timeElapsed > downTime) {
+            if (distance < PROXIMITY_THRESHOLD && timeElapsed > 1000) {
                 this.lastAlert = System.currentTimeMillis();
                 sendProximityAlertIntent();
             }

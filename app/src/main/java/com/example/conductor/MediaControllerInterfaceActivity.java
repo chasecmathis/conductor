@@ -106,6 +106,8 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
     private SeekBar seekBar;
 
+    private boolean cameraOn;
+
     /**
      * Main initializer for starting Conductor
      *
@@ -159,6 +161,8 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
     protected void onResume() {
         super.onResume();
+
+        cameraOn = false;
 
         if (!mediaSessionManager.getActiveSessions(new ComponentName(MediaControllerInterfaceActivity.this, getClass())).isEmpty()) {
             List<MediaController> controllers = mediaSessionManager.getActiveSessions(new ComponentName(MediaControllerInterfaceActivity.this, getClass()));
@@ -336,8 +340,16 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
                 fragmentManager.beginTransaction()
                         .replace(R.id.fragment_container, camFrag)
                         .commit();
+                if(cameraOn){
+                    shutterHandler.removeCallbacks(hideCamera);
+                    shutterHandler.post(hideCamera);
+                    cameraOn = false;
+                }
+                else{
+                    cameraOn = true;
+                    shutterHandler.postDelayed(hideCamera, cameraActiveInterval_MS);
+                }
 
-                shutterHandler.postDelayed(hideCamera, cameraActiveInterval_MS);
             }
         }
     };

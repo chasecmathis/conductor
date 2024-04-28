@@ -1,10 +1,11 @@
-package com.example.conductor;
+package com.example.conductor.util;
 
 import android.app.Activity;
 import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.example.conductor.R;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;

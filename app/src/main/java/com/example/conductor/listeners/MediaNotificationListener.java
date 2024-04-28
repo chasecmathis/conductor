@@ -1,4 +1,4 @@
-package com.example.conductor;
+package com.example.conductor.listeners;
 
 import android.app.Notification;
 import android.service.notification.NotificationListenerService;

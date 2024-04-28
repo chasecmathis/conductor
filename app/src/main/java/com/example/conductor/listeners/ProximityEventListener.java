@@ -40,7 +40,7 @@ public class ProximityEventListener implements SensorEventListener {
         }
     }
 
-    protected void updateDowntime(int time_MS){
+    public void updateDowntime(int time_MS){
         downTime = time_MS;
     }
 
@@ -52,7 +52,6 @@ public class ProximityEventListener implements SensorEventListener {
     private void sendProximityAlertIntent() {
         Intent intent = new Intent("PROXIMITY_ALERT");
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-//        context.sendBroadcast(intent);
         Log.d("Broadcasting", "Bro");
     }
 }

@@ -1,4 +1,4 @@
-package com.example.conductor;
+package com.example.conductor.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,9 +16,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.ArrayList;
+import com.example.conductor.R;
+
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class SettingsActivity extends AppCompatActivity {

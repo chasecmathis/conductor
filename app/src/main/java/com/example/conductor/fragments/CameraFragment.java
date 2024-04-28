@@ -33,7 +33,7 @@ import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.conductor.GestureRecognition;
+import com.example.conductor.util.GestureRecognition;
 import com.example.conductor.R;
 import com.google.mediapipe.framework.image.BitmapImageBuilder;
 import com.google.mediapipe.framework.image.MPImage;

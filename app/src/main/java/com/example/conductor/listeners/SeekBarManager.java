@@ -1,20 +1,19 @@
-package com.example.conductor;
+package com.example.conductor.listeners;
 
-import android.content.ComponentName;
 import android.media.MediaMetadata;
 import android.media.session.MediaController;
-import android.media.session.MediaSessionManager;
-import android.os.Build;
 import android.util.Log;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import com.example.conductor.R;
+import com.example.conductor.activities.MediaControllerInterfaceActivity;
 
 public class SeekBarManager implements SeekBar.OnSeekBarChangeListener {
 
     private MediaController mediaController;
     private SeekBar seekBar;
     private TextView songPositionTextView;
-    git
     private MediaControllerInterfaceActivity activity;
     int progress;
 

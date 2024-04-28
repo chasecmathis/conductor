@@ -16,15 +16,15 @@
         android:theme="@style/Theme.Conductor"
         tools:targetApi="31">
         <activity
-            android:name=".SettingsActivity"
+            android:name=".activities.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings" />
         <activity
-            android:name=".TutorialActivity"
+            android:name=".activities.TutorialActivity"
             android:exported="false"
             android:label="@string/title_activity_tutorial" />
         <activity
-            android:name=".IntroScreenActivity"
+            android:name=".activities.IntroScreenActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,11 +33,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MediaControllerInterfaceActivity"
+            android:name=".activities.MediaControllerInterfaceActivity"
             android:exported="true" />
 
         <service
-            android:name=".MediaNotificationListener"
+            android:name=".listeners.MediaNotificationListener"
             android:exported="false"
             android:label="@string/service_name"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">

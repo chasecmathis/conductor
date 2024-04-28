@@ -1,18 +1,14 @@
-package com.example.conductor;
+package com.example.conductor.activities;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import com.google.android.material.snackbar.Snackbar;
-
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.core.view.WindowCompat;
+import com.example.conductor.R;
 
 
 public class TutorialActivity extends AppCompatActivity {

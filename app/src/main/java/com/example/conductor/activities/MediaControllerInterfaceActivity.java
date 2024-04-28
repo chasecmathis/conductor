@@ -1,11 +1,10 @@
-package com.example.conductor;
+package com.example.conductor.activities;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.Manifest;
@@ -36,6 +35,11 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.example.conductor.util.MusicController;
+import com.example.conductor.listeners.ProximityEventListener;
+import com.example.conductor.R;
+import com.example.conductor.listeners.SeekBarManager;
+import com.example.conductor.util.SpotifyHelper;
 import com.example.conductor.fragments.CameraFragment;
 import com.example.conductor.fragments.ShutterFragment;
 
@@ -106,6 +110,8 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
     private SeekBar seekBar;
 
+    private boolean cameraOn;
+
     /**
      * Main initializer for starting Conductor
      *
@@ -159,6 +165,8 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
     protected void onResume() {
         super.onResume();
+
+        cameraOn = false;
 
         if (!mediaSessionManager.getActiveSessions(new ComponentName(MediaControllerInterfaceActivity.this, getClass())).isEmpty()) {
             List<MediaController> controllers = mediaSessionManager.getActiveSessions(new ComponentName(MediaControllerInterfaceActivity.this, getClass()));
@@ -333,11 +341,18 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
             FragmentManager fragmentManager = getSupportFragmentManager();
 
             if (!fragmentManager.isDestroyed()) {
-                fragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, camFrag)
-                        .commit();
+                if(cameraOn){
+                    shutterHandler.removeCallbacks(hideCamera);
+                    shutterHandler.post(hideCamera);
+                }
+                else{
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.fragment_container, camFrag)
+                            .commit();
+                    cameraOn = true;
+                    shutterHandler.postDelayed(hideCamera, cameraActiveInterval_MS);
+                }
 
-                shutterHandler.postDelayed(hideCamera, cameraActiveInterval_MS);
             }
         }
     };
@@ -417,6 +432,7 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
             if (!fragmentManager.isDestroyed()) {
                 fragmentManager.beginTransaction().replace(R.id.fragment_container, shutterFrag).commit();
+                cameraOn = false;
             }
         }
     };

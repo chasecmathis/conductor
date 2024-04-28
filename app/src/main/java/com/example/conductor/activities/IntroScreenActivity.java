@@ -1,7 +1,4 @@
-package com.example.conductor;
-
-import static com.spotify.sdk.android.auth.AccountsQueryParameters.CLIENT_ID;
-import static com.spotify.sdk.android.auth.LoginActivity.REQUEST_CODE;
+package com.example.conductor.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,9 +11,8 @@ import android.provider.Settings;
 import android.view.View;
 import android.view.WindowManager;
 
-import com.spotify.sdk.android.auth.AuthorizationClient;
-import com.spotify.sdk.android.auth.AuthorizationRequest;
-import com.spotify.sdk.android.auth.AuthorizationResponse;
+import com.example.conductor.listeners.MediaNotificationListener;
+import com.example.conductor.R;
 
 public class IntroScreenActivity extends AppCompatActivity {
 

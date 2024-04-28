@@ -1,23 +1,15 @@
 package com.example.conductor.fragments;
 
-import android.content.ComponentName;
 import android.media.MediaMetadata;
 import android.media.session.MediaController;
-import android.media.session.MediaSessionManager;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
-import com.example.conductor.MediaControllerInterfaceActivity;
 import com.example.conductor.R;
 import android.widget.ImageView;
 import android.graphics.Bitmap;

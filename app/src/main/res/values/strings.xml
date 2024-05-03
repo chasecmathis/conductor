@@ -49,7 +49,7 @@
     <string name="_20">20</string>
     <string name="shutter_setting_label">Shutter Uptime (seconds):</string>
     <string name="image_rate">Sample Rate (seconds):</string>
-    <string name="camera_shutter">Bring Hand Near Phone to Start</string>
+    <string name="camera_shutter">Bring Hand Near Device Camera to Start</string>
     <string name="login_with_spotify">Login with Spotify</string>
     <string name="song_title">Title:</string>
     <string name="song_artist">Artist:</string>

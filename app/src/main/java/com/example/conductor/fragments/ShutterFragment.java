@@ -15,9 +15,7 @@ import android.graphics.Bitmap;
 import com.example.conductor.R;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link ShutterFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Fragment for displaying the media information while shutter is on
  */
 public class ShutterFragment extends Fragment {
 

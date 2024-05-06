@@ -12,6 +12,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class ProximityEventListener implements SensorEventListener {
 
+    //distance away at which proximity sensor begins triggering
     private static final float PROXIMITY_THRESHOLD = 5.0f;
     private static final double CYCLING_INTERVAL_MS = 1000;
 
@@ -26,6 +27,10 @@ public class ProximityEventListener implements SensorEventListener {
     }
 
 
+    /**
+     * Sends an alert to the MediaController if object sensed within 5cm of the phone
+     * @param event the {@link android.hardware.SensorEvent SensorEvent}.
+     */
     @Override
     public void onSensorChanged(SensorEvent event) {
 
@@ -49,6 +54,9 @@ public class ProximityEventListener implements SensorEventListener {
 
     }
 
+    /**
+     * Alert the MediaController that a proximal object was detected
+     */
     private void sendProximityAlertIntent() {
         Intent intent = new Intent("PROXIMITY_ALERT");
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);

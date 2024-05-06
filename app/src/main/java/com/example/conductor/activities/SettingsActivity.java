@@ -13,7 +13,6 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.conductor.R;
@@ -21,8 +20,12 @@ import com.example.conductor.R;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * This activity allows users to adjust settings related to image rate, shutter uptime, and gesture mappings.
+ */
 public class SettingsActivity extends AppCompatActivity {
 
+    // Keys for SharedPreferences
     private static final String PREFS_NAME = "settings";
     private static final String SAMPLE_RATE_KEY = "sample_rate_key";
     private static final String SHUTTER_UPTIME_KEY = "shutter_uptime_key";
@@ -34,6 +37,7 @@ public class SettingsActivity extends AppCompatActivity {
     private static final String PREVIOUS_GESTURE_KEY = "previous_gesture_key";
     private static final String LIKE_GESTURE_KEY = "like_gesture_key";
 
+    // Spinners for gesture mappings
     Spinner up_spinner;
     Spinner down_spinner;
     Spinner skip_spinner;
@@ -42,52 +46,58 @@ public class SettingsActivity extends AppCompatActivity {
     Spinner pause_spinner;
     Spinner play_spinner;
 
+    // SharedPreferences object
     private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.settings_page);
 
+        // Set status bar color
         int color = Color.parseColor("#664C33");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         getWindow().setStatusBarColor(color);
 
+        // Initialize SharedPreferences
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
-        RadioGroup imageRateGroup = findViewById(R.id.imageRateOptions);
-        imageRateGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                // Find which radio button is selected
-                RadioButton radioButton = findViewById(checkedId);
-                String imageRate = radioButton.getText().toString();
+        // Setup radio button groups
+        setupRadioGroups();
 
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(SAMPLE_RATE_KEY, imageRate);
-                editor.apply();
-            }
+        // Setup gesture mappings
+        setupGestureMappings();
+    }
+
+    /**
+     * Sets up radio button groups for image rate and shutter uptime settings.
+     */
+    private void setupRadioGroups() {
+        RadioGroup imageRateGroup = findViewById(R.id.imageRateOptions);
+        imageRateGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            RadioButton radioButton = findViewById(checkedId);
+            String imageRate = radioButton.getText().toString();
+
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString(SAMPLE_RATE_KEY, imageRate);
+            editor.apply();
         });
 
         RadioGroup shutterUptimeGroup = findViewById(R.id.shutterUptimeOptions);
-        shutterUptimeGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                // Find which radio button is selected
-                RadioButton radioButton = findViewById(checkedId);
-                String shutterUptime = radioButton.getText().toString();
+        shutterUptimeGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            RadioButton radioButton = findViewById(checkedId);
+            String shutterUptime = radioButton.getText().toString();
 
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(SHUTTER_UPTIME_KEY, shutterUptime);
-                editor.apply();
-            }
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString(SHUTTER_UPTIME_KEY, shutterUptime);
+            editor.apply();
         });
+    }
 
-
-
-        //Setup gesture mapping
+    /**
+     * Sets up spinners for gesture mappings.
+     */
+    private void setupGestureMappings() {
         up_spinner = findViewById(R.id.up_spinner);
         down_spinner = findViewById(R.id.down_spinner);
         skip_spinner = findViewById(R.id.skip_spinner);
@@ -95,70 +105,97 @@ public class SettingsActivity extends AppCompatActivity {
         like_spinner = findViewById(R.id.like_spinner);
         pause_spinner = findViewById(R.id.pause_spinner);
         play_spinner = findViewById(R.id.play_spinner);
-
-
     }
 
+    @Override
     protected void onResume() {
         super.onResume();
 
-        // Retrieve old settings and set the correct radio buttons
-        String imageRate = sharedPreferences.getString(SAMPLE_RATE_KEY, "");
-        Log.d("DEBUG", "xCyx: image rate: " + imageRate);
-        if (!imageRate.isEmpty()) {
-            RadioGroup imageRateGroup = findViewById(R.id.imageRateOptions);
-            for (int i = 0; i < imageRateGroup.getChildCount(); i++) {
-                RadioButton imageRateButton = (RadioButton) imageRateGroup.getChildAt(i);
-                if (imageRateButton.getText().toString().equals(imageRate)) {
-                    imageRateButton.setChecked(true);
-                }
-            }
-        }
-
-        String shutterUptime = sharedPreferences.getString(SHUTTER_UPTIME_KEY, "");
-        Log.d("DEBUG", "xCyx: shutter uptime: " + shutterUptime);
-        if (!shutterUptime.isEmpty()) {
-            RadioGroup shutterUptimeGroup = findViewById(R.id.shutterUptimeOptions);
-            for (int i = 0; i < shutterUptimeGroup.getChildCount(); i++) {
-                RadioButton shutterUptimeButton = (RadioButton) shutterUptimeGroup.getChildAt(i);
-                if (shutterUptimeButton.getText().toString().equals(shutterUptime)) {
-                    shutterUptimeButton.setChecked(true);
-                }
-            }
-        }
-
-
-        //Retrieve old values of mapping
-
-        int storedValue = sharedPreferences.getInt(UP_GESTURE_KEY, 1);
-        Log.d("TEST", String.valueOf(storedValue));
-        up_spinner.setSelection(storedValue);
-        storedValue = sharedPreferences.getInt(DOWN_GESTURE_KEY, 2);
-        down_spinner.setSelection(storedValue);
-        storedValue = sharedPreferences.getInt(SKIP_GESTURE_KEY, 5);
-        skip_spinner.setSelection(storedValue);
-        storedValue = sharedPreferences.getInt(PREVIOUS_GESTURE_KEY, 6);
-        previous_spinner.setSelection(storedValue);
-        storedValue = sharedPreferences.getInt(PLAY_GESTURE_KEY, 3);
-        play_spinner.setSelection(storedValue);
-        storedValue = sharedPreferences.getInt(PAUSE_GESTURE_KEY, 4);
-        pause_spinner.setSelection(storedValue);
-        storedValue = sharedPreferences.getInt(LIKE_GESTURE_KEY, 0);
-        like_spinner.setSelection(storedValue);
+        // Restore settings and mappings
+        restoreSettings();
     }
 
+    /**
+     * Restores settings and gesture mappings when the activity resumes.
+     */
+    private void restoreSettings() {
+        // Restore image rate setting
+        String imageRate = sharedPreferences.getString(SAMPLE_RATE_KEY, "");
+        restoreRadioGroupSelection(R.id.imageRateOptions, imageRate);
 
-    public void settingsBackClicked(View v) {
-        if(mappings_valid()) {
-            store_mappings();
-            this.finish();
+        // Restore shutter uptime setting
+        String shutterUptime = sharedPreferences.getString(SHUTTER_UPTIME_KEY, "");
+        restoreRadioGroupSelection(R.id.shutterUptimeOptions, shutterUptime);
+
+        // Restore gesture mappings
+        restoreGestureMappings();
+    }
+
+    /**
+     * Restores the selection of a radio button group based on the provided setting.
+     *
+     * @param radioGroupId The ID of the radio button group.
+     * @param setting      The setting to be restored.
+     */
+    private void restoreRadioGroupSelection(int radioGroupId, String setting) {
+        if (!setting.isEmpty()) {
+            RadioGroup radioGroup = findViewById(radioGroupId);
+            for (int i = 0; i < radioGroup.getChildCount(); i++) {
+                RadioButton radioButton = (RadioButton) radioGroup.getChildAt(i);
+                if (radioButton.getText().toString().equals(setting)) {
+                    radioButton.setChecked(true);
+                    break;
+                }
+            }
         }
-        else {
+    }
+
+    /**
+     * Restores gesture mappings from SharedPreferences.
+     */
+    private void restoreGestureMappings() {
+        // Retrieve and set mappings for each gesture
+        setGestureMapping(UP_GESTURE_KEY, up_spinner);
+        setGestureMapping(DOWN_GESTURE_KEY, down_spinner);
+        setGestureMapping(SKIP_GESTURE_KEY, skip_spinner);
+        setGestureMapping(PREVIOUS_GESTURE_KEY, previous_spinner);
+        setGestureMapping(PLAY_GESTURE_KEY, play_spinner);
+        setGestureMapping(PAUSE_GESTURE_KEY, pause_spinner);
+        setGestureMapping(LIKE_GESTURE_KEY, like_spinner);
+    }
+
+    /**
+     * Sets a gesture mapping in the corresponding spinner.
+     *
+     * @param key     The key for the gesture mapping in SharedPreferences.
+     * @param spinner The spinner to set the mapping in.
+     */
+    private void setGestureMapping(String key, Spinner spinner) {
+        int storedValue = sharedPreferences.getInt(key, 0);
+        spinner.setSelection(storedValue);
+    }
+
+    /**
+     * Handles the click event for the back button.
+     * Validates mappings before finishing the activity.
+     *
+     * @param v The clicked view.
+     */
+    public void settingsBackClicked(View v) {
+        if (areMappingsValid()) {
+            storeMappings();
+            this.finish();
+        } else {
             Toast.makeText(getApplicationContext(), "Make sure every function has a unique gesture", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private boolean mappings_valid(){
+    /**
+     * Checks whether gesture mappings are valid.
+     *
+     * @return True if mappings are valid, false otherwise.
+     */
+    private boolean areMappingsValid() {
         Set<Integer> different = new HashSet<>();
         different.add(up_spinner.getSelectedItemPosition());
         different.add(down_spinner.getSelectedItemPosition());
@@ -170,7 +207,10 @@ public class SettingsActivity extends AppCompatActivity {
         return different.size() == 7;
     }
 
-    private void store_mappings(){
+    /**
+     * Stores gesture mappings in SharedPreferences.
+     */
+    private void storeMappings() {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt(UP_GESTURE_KEY, up_spinner.getSelectedItemPosition());
         editor.putInt(DOWN_GESTURE_KEY, down_spinner.getSelectedItemPosition());

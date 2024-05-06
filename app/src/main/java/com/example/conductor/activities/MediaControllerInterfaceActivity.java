@@ -72,6 +72,7 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
     private String PREVIOUS = "ILoveYou";
 
+    // Map of gestures that could be recognized
     private final String[] GESTURE_MAP = {"Thumb_Up", "Pointing_Up", "Thumb_Down", "Closed_Fist", "Open_Palm", "Victory", "ILoveYou"};
 
 
@@ -82,13 +83,17 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
     private CameraFragment camFrag;
     private ShutterFragment shutterFrag;
 
+
+    // UI Thread handler
     private final Handler mainThread = new Handler(Looper.getMainLooper());
 
+    // Shutter thread and handler
     private Handler shutterHandler;
     private HandlerThread shutterThread;
 
     private int cameraActiveInterval_MS = 5000;
 
+    // Keys into the command map
     private static final String PREFS_NAME = "settings";
     private static final String SAMPLE_RATE_KEY = "sample_rate_key";
     private static final String SHUTTER_UPTIME_KEY = "shutter_uptime_key";
@@ -102,6 +107,7 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
 
     private final int SEEK_MS = 500;
 
+    // TextViews
     private TextView title_text;
     private TextView artist_text;
     private TextView album_text;
@@ -151,23 +157,34 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         //Handle fragment swapping to turn camera on and off
         camFrag = new CameraFragment(cameraManager);
 
+        // UI components
         seekBar = findViewById(R.id.seekbar);
         title_text = findViewById(R.id.shutter_title);
         artist_text = findViewById(R.id.shutter_artist);
         album_text = findViewById(R.id.shutter_album);
     }
 
+    /**
+     * Called when the activity is becoming visible to the user.
+     */
     @Override
     protected void onStart() {
         super.onStart();
+
+        // Initialize the spotify app connection
         spotify.initializeSpotifyAppRemote();
     }
 
+    /**
+     * Called when the activity is resumed and is visible to the user.
+     */
+    @Override
     protected void onResume() {
         super.onResume();
 
         cameraOn = false;
 
+        // Get the media controller from the Notification Listener
         if (!mediaSessionManager.getActiveSessions(new ComponentName(MediaControllerInterfaceActivity.this, getClass())).isEmpty()) {
             List<MediaController> controllers = mediaSessionManager.getActiveSessions(new ComponentName(MediaControllerInterfaceActivity.this, getClass()));
             // Check if there are active media controllers
@@ -175,21 +192,28 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
                 this.mediaController = controllers.get(0);
         }
 
+        // Initialize the Shutter fragment
         shutterFrag = new ShutterFragment(mediaController);
 
+        // Set the color on the background
         int color = Color.parseColor("#664C33");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         getWindow().setStatusBarColor(color);
 
+        // Register the sensor manager to get the proximity sensor
         SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         sensorManager.registerListener(this.proximityListener, sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY), SensorManager.SENSOR_DELAY_NORMAL);
 
+        // Make sure the screen doesn't turn off when using the app
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        // Set the settings to the previously selected options
         setSettings();
 
+        // Start the media metadata thread
         startShutterThread();
 
+        // Metadata text views
         title_text = findViewById(R.id.shutter_title);
         artist_text = findViewById(R.id.shutter_artist);
         album_text = findViewById(R.id.shutter_album);
@@ -197,6 +221,7 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         //Start all physical playback control buttons
         initButtons();
 
+        // Set the metadata properly
         registerMediaControllerCallback();
         seekBarManager = new SeekBarManager(mediaController, seekBar, this);
         seekBar.setOnSeekBarChangeListener(seekBarManager);
@@ -204,27 +229,45 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         updateMetadata();
     }
 
+
+    /**
+     * Called when the activity is paused and is no longer visible to the user.
+     */
+    @Override
     protected void onPause() {
         super.onPause();
+
+        // Pause the proximity sensor
         SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         sensorManager.unregisterListener(this.proximityListener);
         stopShutterThread();
+
+        // Allow the screen to turn off
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         unregisterMediaControllerCallback();
         stopSeekUpdates();
     }
 
+    /**
+     * Called when the activity is no longer visible to the user, because another activity has been resumed and is covering this one.
+     */
     @Override
     protected void onStop() {
         super.onStop();
         spotify.disconnectSpotifyAppRemote();
     }
 
+    /**
+     * Resets the settings to what the user previously selected
+     */
     private void setSettings() {
+
+        // Get access to the shared preferences data
         SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         String shutterUptime = sharedPreferences.getString(SHUTTER_UPTIME_KEY, "10");
         String sampleRate = sharedPreferences.getString(SAMPLE_RATE_KEY, "2");
 
+        // Retrieve selections
         this.cameraActiveInterval_MS = Integer.valueOf(shutterUptime) * 1000;
         this.camFrag.setSampleRate((int) (Float.valueOf(sampleRate) * 1000));
         this.proximityListener.updateDowntime(cameraActiveInterval_MS);
@@ -246,16 +289,21 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         storedValue = sharedPreferences.getInt(LIKE_GESTURE_KEY, 0);
         LIKE_SONG = GESTURE_MAP[storedValue];
 
+        // Set sample rates and camera shutter based on selections
         this.cameraActiveInterval_MS = Integer.parseInt(shutterUptime) * 1000;
         this.camFrag.setSampleRate((int) (Float.parseFloat(sampleRate) * 1000));
     }
 
-    // Method to start updating metadata constantly
+    /**
+     * Method to start updating metadata constantly.
+     */
     private void startSeekUpdates() {
         mainThread.post(updateSeekRunnable);
     }
 
-    // Method to stop updating metadata
+    /**
+     * Method to stop updating metadata.
+     */
     private void stopSeekUpdates() {
         mainThread.removeCallbacks(updateSeekRunnable);
     }
@@ -269,7 +317,9 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         }
     };
 
-    // Method to update metadata
+    /**
+     * Method to update metadata.
+     */
     private void updateMetadata() {
         // Update title, artist, and album views
         if (mediaController != null) {
@@ -277,25 +327,33 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
             if (metadata != null) {
                 shutterFrag.updateAlbumArt();
 
+                // Set title
                 if (metadata.getText(MediaMetadata.METADATA_KEY_TITLE) != null) {
                     String title = metadata.getText(MediaMetadata.METADATA_KEY_TITLE).toString();
                     title_text.setText(title);
                 }
+
+                // Set artist
                 if (metadata.getText(MediaMetadata.METADATA_KEY_ARTIST) != null) {
                     String artist = metadata.getText(MediaMetadata.METADATA_KEY_ARTIST).toString();
                     artist_text.setText(artist);
                 }
+
+                // Set album name
                 if (metadata.getText(MediaMetadata.METADATA_KEY_ALBUM) != null) {
                     String album = metadata.getText(MediaMetadata.METADATA_KEY_ALBUM).toString();
                     album_text.setText(album);
                 }
 
+
+                // Set play button or pause button depending on current playback state
                 PlaybackState state = mediaController.getPlaybackState();
                 ImageButton playPauseButton = findViewById(R.id.button_play_pause);
                 if (state != null && state.getState() == PlaybackState.STATE_PLAYING)
                     playPauseButton.setImageResource(R.drawable.ic_pause);
                 else playPauseButton.setImageResource(R.drawable.ic_play);
 
+                // Set the favorite button to be filled or not depending on current like status
                 ImageButton favoriteButton = findViewById(R.id.button_heart);
 
                 spotify.isLiked().thenAccept(liked -> {
@@ -306,27 +364,41 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         }
     }
 
-    // This method will be called when the button is clicked
+    /**
+     * Method to handle pause button click.
+     */
     private void pauseButtonClick() {
         if (mediaController != null)
             mediaController.getTransportControls().pause();
     }
 
+    /**
+     * Method to handle play button click.
+     */
     private void playButtonClick() {
         if (mediaController != null)
             mediaController.getTransportControls().play();
     }
 
+    /**
+     * Method to handle skip button click.
+     */
     private void skipButtonClick() {
         if (mediaController != null)
             mediaController.getTransportControls().skipToNext();
     }
 
+    /**
+     * Method to handle previous button click.
+     */
     private void previousButtonClick() {
         if (mediaController != null)
             mediaController.getTransportControls().skipToPrevious();
     }
 
+    /**
+     * Method to handle like button click.
+     */
     private void likeButtonClick() {
         spotify.isLiked().thenAccept(liked -> {
             boolean spotifyPlaying = mediaController.getPackageName().equals("com.spotify.music");
@@ -335,6 +407,9 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Initializes proximity sensor receiver.
+     */
     private final BroadcastReceiver proximityAlertReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -401,6 +476,9 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * Restarts the shutter.
+     */
     private void restartShutter() {
         if (shutterHandler != null) {
             shutterHandler.removeCallbacks(hideCamera);
@@ -408,14 +486,23 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Handles volume up action.
+     */
     private void volumeUp() {
         this.musicController.raiseVolume();
     }
 
+    /**
+     * Handles volume down action.
+     */
     private void volumeDown() {
         this.musicController.lowerVolume();
     }
 
+    /**
+     * Opens the settings activity.
+     */
     public void settingsClicked(View v) {
         Intent settingsIntent = new Intent(this, SettingsActivity.class);
         settingsIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -437,6 +524,9 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * Starts the shutter thread.
+     */
     private void startShutterThread() {
         shutterThread = new HandlerThread("shutter");
         shutterThread.start();
@@ -444,6 +534,9 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         shutterHandler.post(hideCamera);
     }
 
+    /**
+     * Stops the shutter thread.
+     */
     private void stopShutterThread() {
         if (shutterThread != null) {
             shutterThread.quitSafely();
@@ -493,17 +586,26 @@ public class MediaControllerInterfaceActivity extends AppCompatActivity {
         favoriteButton.setOnClickListener(v -> likeButtonClick());
     }
 
+    /**
+     * Opens the tutorial activity.
+     */
     public void tutorialClicked(View v) {
         Intent turorialIntent = new Intent(this, TutorialActivity.class);
         turorialIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(turorialIntent);
     }
 
+    /**
+     * Registers media controller callback.
+     */
     private void registerMediaControllerCallback() {
         if (mediaController != null)
             mediaController.registerCallback(mediaControllerCallback);
     }
 
+    /**
+     * Unregisters media controller callback.
+     */
     private void unregisterMediaControllerCallback() {
         if (mediaController != null)
             mediaController.unregisterCallback(mediaControllerCallback);

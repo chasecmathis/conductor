@@ -50,7 +50,8 @@ public class SpotifyHelper {
                 mSpotifyAppRemote = spotifyAppRemote;
                 Log.d("Spotify", "Connected to Spotify App Remote");
 
-                ImageButton favorite_button = (ImageButton) activity.findViewById(R.id.button_heart);
+                // Update favorite button based on song like status
+                ImageButton favorite_button = activity.findViewById(R.id.button_heart);
                 isLiked().thenAccept(liked -> {
                     if (liked) favorite_button.setImageResource(R.drawable.ic_favorite);
                     else favorite_button.setImageResource(R.drawable.ic_favorite_border);
@@ -73,6 +74,8 @@ public class SpotifyHelper {
 
     /**
      * Likes the currently playing song on Spotify.
+     *
+     * @param playingSpotify Flag indicating whether Spotify is currently playing a song.
      */
     public void likeSpotifySong(boolean playingSpotify) {
         if (mSpotifyAppRemote != null && mSpotifyAppRemote.isConnected() && playingSpotify) {
@@ -89,6 +92,11 @@ public class SpotifyHelper {
         }
     }
 
+    /**
+     * Checks whether the currently playing song on Spotify is liked.
+     *
+     * @return A CompletableFuture that completes with true if the song is liked, false otherwise.
+     */
     public CompletableFuture<Boolean> isLiked() {
         CompletableFuture<Boolean> isLikedFuture = new CompletableFuture<>();
         if (mSpotifyAppRemote != null && mSpotifyAppRemote.isConnected()) {
@@ -105,7 +113,11 @@ public class SpotifyHelper {
         return isLikedFuture;
     }
 
-
+    /**
+     * Unlikes the currently playing song on Spotify.
+     *
+     * @param playingSpotify Flag indicating whether Spotify is currently playing a song.
+     */
     public void unlikeSpotifySong(boolean playingSpotify) {
         if (mSpotifyAppRemote != null && mSpotifyAppRemote.isConnected() && playingSpotify) {
             mSpotifyAppRemote.getPlayerApi().getPlayerState().setResultCallback(playerState -> {

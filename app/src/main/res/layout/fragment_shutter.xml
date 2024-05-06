@@ -10,7 +10,6 @@
         android:layout_gravity="top"
         android:layout_marginTop="50dp">
 
-
         <TextView
             android:id="@+id/camera_shutter_text"
             android:layout_width="match_parent"

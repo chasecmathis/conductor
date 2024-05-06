@@ -9,6 +9,11 @@ import android.widget.TextView;
 import com.example.conductor.R;
 import com.example.conductor.activities.MediaControllerInterfaceActivity;
 
+/**
+ * The main UI page of the app has a progress bar that shows how far along the song is from
+ * beginning to end. Users can grab this progress bar and slide it forward or backward to fast
+ * forward or skip backward in the song. This class facilitates that behavior.
+ */
 public class SeekBarManager implements SeekBar.OnSeekBarChangeListener {
 
     private MediaController mediaController;
@@ -23,6 +28,12 @@ public class SeekBarManager implements SeekBar.OnSeekBarChangeListener {
         this.songPositionTextView = activity.findViewById(R.id.song_position);
     }
 
+    /** This function tracks where the user has moved the progress bar to
+     *
+     * @param seekBar The SeekBar whose progress has changed
+     * @param progress The current progress level. This will be in the range 0 ... 100
+     * @param fromUser True if the progress change was initiated by the user.
+     */
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         // Update the current playback position based on seek bar progress
@@ -30,12 +41,22 @@ public class SeekBarManager implements SeekBar.OnSeekBarChangeListener {
         this.progress = progress;
     }
 
+    /**
+     * When the user slides on the progress bar, the music should stop until we know
+     * where to play from again
+     * @param seekBar The SeekBar in which the touch gesture began
+     */
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
         mediaController.getTransportControls().pause();
         Log.d("xCyx SongProgress", "onStart");
     }
 
+    /**
+     * When the user lets to progress bar go, we want to start playing music
+     * from wherever they skipped to
+     * @param seekBar The SeekBar in which the touch gesture began
+     */
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         // Make music catch up to progress bar
@@ -44,6 +65,10 @@ public class SeekBarManager implements SeekBar.OnSeekBarChangeListener {
         Log.d("xCyx SongProgress", "onStop");
     }
 
+    /**
+     * This method is used for displaying to the screen the time in seconds that the current
+     * song has played as well as the total length of the song
+     */
     public void updateSeekBarProgress() {
         if (mediaController != null) {
             MediaMetadata metadata = mediaController.getMetadata();
@@ -67,6 +92,11 @@ public class SeekBarManager implements SeekBar.OnSeekBarChangeListener {
         }
     }
 
+    /**
+     * Helper function for formatting our times as min:seconds, which is standard for music apps
+     * @param timeInMillis
+     * @return
+     */
     private String formatTime(long timeInMillis) {
         long minutes = (timeInMillis / 1000) / 60;
         long seconds = (timeInMillis / 1000) % 60;
